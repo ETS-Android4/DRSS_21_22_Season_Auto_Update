@@ -6,20 +6,21 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.util.NanoClock;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.internal.system.Misc;
-import org.firstinspires.ftc.teamcode.subsystems.roadrunner.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.subsystems.roadrunner.drive.CompMecanumDrive;
 import org.firstinspires.ftc.teamcode.subsystems.roadrunner.util.LoggingUtil;
 import org.firstinspires.ftc.teamcode.subsystems.roadrunner.util.RegressionUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.firstinspires.ftc.teamcode.subsystems.roadrunner.drive.DriveConstants.MAX_RPM;
-import static org.firstinspires.ftc.teamcode.subsystems.roadrunner.drive.DriveConstants.RUN_USING_ENCODER;
-import static org.firstinspires.ftc.teamcode.subsystems.roadrunner.drive.DriveConstants.rpmToVelocity;
+import static org.firstinspires.ftc.teamcode.subsystems.roadrunner.drive.CompDriveConstants.MAX_RPM;
+import static org.firstinspires.ftc.teamcode.subsystems.roadrunner.drive.CompDriveConstants.RUN_USING_ENCODER;
+import static org.firstinspires.ftc.teamcode.subsystems.roadrunner.drive.CompDriveConstants.rpmToVelocity;
 
 /*
  * Op mode for computing kV, kStatic, and kA from various drive routines. For the curious, here's an
@@ -32,6 +33,7 @@ import static org.firstinspires.ftc.teamcode.subsystems.roadrunner.drive.DriveCo
  *      regression.
  */
 @Config
+@Disabled
 @Autonomous(group = "drive")
 public class AutomaticFeedforwardTuner extends LinearOpMode {
     public static double MAX_POWER = 0.7;
@@ -46,7 +48,7 @@ public class AutomaticFeedforwardTuner extends LinearOpMode {
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+        CompMecanumDrive drive = new CompMecanumDrive(hardwareMap);
 
         NanoClock clock = NanoClock.system();
 

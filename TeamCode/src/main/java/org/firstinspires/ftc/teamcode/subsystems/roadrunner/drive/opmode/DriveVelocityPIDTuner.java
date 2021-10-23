@@ -9,19 +9,20 @@ import com.acmerobotics.roadrunner.profile.MotionProfileGenerator;
 import com.acmerobotics.roadrunner.profile.MotionState;
 import com.acmerobotics.roadrunner.util.NanoClock;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.RobotLog;
 
-import org.firstinspires.ftc.teamcode.subsystems.roadrunner.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.subsystems.roadrunner.drive.CompMecanumDrive;
 
 import java.util.List;
 
-import static org.firstinspires.ftc.teamcode.subsystems.roadrunner.drive.DriveConstants.MAX_ACCEL;
-import static org.firstinspires.ftc.teamcode.subsystems.roadrunner.drive.DriveConstants.MAX_VEL;
-import static org.firstinspires.ftc.teamcode.subsystems.roadrunner.drive.DriveConstants.MOTOR_VELO_PID;
-import static org.firstinspires.ftc.teamcode.subsystems.roadrunner.drive.DriveConstants.RUN_USING_ENCODER;
-import static org.firstinspires.ftc.teamcode.subsystems.roadrunner.drive.DriveConstants.kV;
+import static org.firstinspires.ftc.teamcode.subsystems.roadrunner.drive.CompDriveConstants.MAX_ACCEL;
+import static org.firstinspires.ftc.teamcode.subsystems.roadrunner.drive.CompDriveConstants.MAX_VEL;
+import static org.firstinspires.ftc.teamcode.subsystems.roadrunner.drive.CompDriveConstants.MOTOR_VELO_PID;
+import static org.firstinspires.ftc.teamcode.subsystems.roadrunner.drive.CompDriveConstants.RUN_USING_ENCODER;
+import static org.firstinspires.ftc.teamcode.subsystems.roadrunner.drive.CompDriveConstants.kV;
 
 /*
  * This routine is designed to tune the PID coefficients used by the REV Expansion Hubs for closed-
@@ -48,6 +49,7 @@ import static org.firstinspires.ftc.teamcode.subsystems.roadrunner.drive.DriveCo
  * Pressing B/O (Xbox/PS4) will cede control back to the tuning process.
  */
 @Config
+@Disabled
 @Autonomous(group = "drive")
 public class DriveVelocityPIDTuner extends LinearOpMode {
     public static double DISTANCE = 72; // in
@@ -72,7 +74,7 @@ public class DriveVelocityPIDTuner extends LinearOpMode {
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+        CompMecanumDrive drive = new CompMecanumDrive(hardwareMap);
 
         Mode mode = Mode.TUNING_MODE;
 
