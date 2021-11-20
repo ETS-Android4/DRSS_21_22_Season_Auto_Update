@@ -42,10 +42,7 @@ public class CompTeleOp extends LinearOpMode{
 				speedOverride = 1;
 			}
 			if (controls.speedTrigger.isDown()) {
-				speedOverride = 0.75;
-			}
-			else if (controls.speedTrigger.wasJustReleased()) {
-				speedOverride = 1;
+				speedOverride = 0.5;
 			}
 
 			/*Drivetrain Control*/
@@ -68,6 +65,7 @@ public class CompTeleOp extends LinearOpMode{
 			/*End of loop updates*/
 			gamepad1ex.readButtons();
 			gamepad2ex.readButtons();
+			controls.readValues();
 		}
 	}
 }

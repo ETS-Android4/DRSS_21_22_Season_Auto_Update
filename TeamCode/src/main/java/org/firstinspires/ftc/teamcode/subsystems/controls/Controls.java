@@ -16,4 +16,8 @@ public class Controls{
 		);
 
 	}
+
+	public void readValues() {
+		speedTrigger.readValue();
+	}
 }
