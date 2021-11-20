@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
-public class intake{
+public class Intake{
 
 	DcMotorEx intakeMotor;
 
@@ -19,7 +19,7 @@ public class intake{
 	TelemetryPacket packet = new TelemetryPacket();
 	FtcDashboard dashboard = FtcDashboard.getInstance();
 
-	public intake(HardwareMap map, Telemetry telemetry) {
+	public Intake(HardwareMap map, Telemetry telemetry) {
 		this.telemetry = telemetry;
 
 		intakeMotor = map.get(DcMotorEx.class, "intakeMotor");
@@ -41,15 +41,33 @@ public class intake{
 		return;
 	}
 
-	public void runIntake(double rotations, double speed) {
-		intakeMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+	public void runIntake(int velocity) {
+		intakeMotor.setVelocity(velocity);
 
-		intakeMotor.setTargetPosition((int) (intakeMotor.getCurrentPosition() + (rotations*COUNTS_PER_ROTATION)));
-		intakeMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-		intakeMotor.setPower(speed);
-		while (intakeMotor.isBusy())
-
-		intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 		return;
 	}
+
+	/**public void runIntake(double rotations, double speed) {
+		intakeMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+		intakeMotor.setTargetPosition((int) (intakeMotor.getCurrentPosition() + (rotations*COUNTS_PER_ROTATION)));
+		intakeMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+		intakeMotor.setPower(speed);
+		while (intakeMotor.isBusy())
+		intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+		return;
+	}
+
+	public void runIntake(double rotations, int velocity) {
+		intakeMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+		intakeMotor.setTargetPosition((int) (intakeMotor.getCurrentPosition() + (rotations*COUNTS_PER_ROTATION)));
+		intakeMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+		intakeMotor.setVelocity(velocity);
+		while (intakeMotor.isBusy())
+		intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+		return;
+	}**/
 }
