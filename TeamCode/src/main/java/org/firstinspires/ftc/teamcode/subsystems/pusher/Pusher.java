@@ -26,6 +26,14 @@ public class Pusher{
 		pushServo = new SimpleServo(map, "pushServo",
 			DEFAULT_MIN_ANGLE, DEFAULT_MAX_ANGLE,
 			AngleUnit.DEGREES);
+
+		pusherSetPosition(0);
+
+		telemetry.addData("Pusher", "Initialized");
+		telemetry.update();
+
+		packet.put("Pusher", "Initialized");
+		dashboard.sendTelemetryPacket(packet);
 	}
 
 	public void pusherSetPosition(float angle) {
