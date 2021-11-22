@@ -13,4 +13,12 @@ public class States {
     };
     public SpeedState speedState = SpeedState.FULL_SPEED;
 
+    public enum IntakeState {
+        IDLE,
+        INTAKE,
+        OUTTAKE,
+        CONTROLLED_INTAKE
+    }
+    public IntakeState intakeState = IntakeState.IDLE;
+
 }

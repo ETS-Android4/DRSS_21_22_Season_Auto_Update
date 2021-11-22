@@ -11,9 +11,9 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class Intake{
 
-	DcMotorEx intakeMotor;
+	public DcMotorEx intakeMotor;
 
-	int COUNTS_PER_ROTATION = 1;
+	public int COUNTS_PER_ROTATION = 1;
 
 	Telemetry telemetry;
 	TelemetryPacket packet = new TelemetryPacket();
@@ -41,8 +41,16 @@ public class Intake{
 		return;
 	}
 
-	public void runIntake(int velocity) {
-		intakeMotor.setVelocity(velocity);
+	public void stop() {
+		intakeMotor.setPower(0);
+
+		return;
+	}
+
+	public void calculateRotations(double rotations) {
+		intakeMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+		intakeMotor.setTargetPosition((int) (intakeMotor.getCurrentPosition() + (rotations*COUNTS_PER_ROTATION)));
+		intakeMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
 		return;
 	}
@@ -53,18 +61,6 @@ public class Intake{
 		intakeMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
 		intakeMotor.setPower(speed);
-		while (intakeMotor.isBusy())
-		intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-		return;
-	}
-
-	public void runIntake(double rotations, int velocity) {
-		intakeMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-		intakeMotor.setTargetPosition((int) (intakeMotor.getCurrentPosition() + (rotations*COUNTS_PER_ROTATION)));
-		intakeMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-		intakeMotor.setVelocity(velocity);
 		while (intakeMotor.isBusy())
 		intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 

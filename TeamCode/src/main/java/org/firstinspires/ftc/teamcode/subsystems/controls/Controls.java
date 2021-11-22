@@ -12,8 +12,12 @@ public class Controls{
 	public ButtonReader quarterSpeedButton;
 	public ButtonReader fullSpeedButton;
 
+	public TriggerReader intakeTrigger;
+	public TriggerReader outtakeTrigger;
+
 	public Controls(GamepadEx gamepad1ex, GamepadEx gamepad2ex) {
 
+		/*Speed Controls*/
 		speedTrigger = new TriggerReader(
 				gamepad1ex, GamepadKeys.Trigger.RIGHT_TRIGGER
 		);
@@ -26,11 +30,23 @@ public class Controls{
 				gamepad1ex, GamepadKeys.Button.Y
 		);
 
+		/*Intake Controls*/
+		intakeTrigger = new TriggerReader(
+				gamepad2ex, GamepadKeys.Trigger.LEFT_TRIGGER
+		);
+
+		outtakeTrigger = new TriggerReader(
+				gamepad2ex, GamepadKeys.Trigger.RIGHT_TRIGGER
+		);
+
 	}
 
 	public void readValues() {
 		speedTrigger.readValue();
 		quarterSpeedButton.readValue();
 		fullSpeedButton.readValue();
+
+		intakeTrigger.readValue();
+		outtakeTrigger.readValue();
 	}
 }
