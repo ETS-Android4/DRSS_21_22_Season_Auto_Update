@@ -10,6 +10,7 @@ import org.firstinspires.ftc.teamcode.subsystems.intake.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.lift.Lift;
 import org.firstinspires.ftc.teamcode.subsystems.pusher.Pusher;
 import org.firstinspires.ftc.teamcode.subsystems.roadrunner.drive.CompMecanumDrive;
+import org.firstinspires.ftc.teamcode.subsystems.states.States;
 
 public class CompRobot{
 
@@ -18,6 +19,8 @@ public class CompRobot{
 	public Lift lift;
 	public Gantry gantry;
 	public Pusher pusher;
+
+	public States states;
 
 	Telemetry telemetry;
 	TelemetryPacket packet = new TelemetryPacket();

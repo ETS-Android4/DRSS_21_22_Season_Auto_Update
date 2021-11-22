@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.subsystems.controls.Controls;
 import org.firstinspires.ftc.teamcode.subsystems.robot.CompRobot;
+import org.firstinspires.ftc.teamcode.subsystems.states.States;
 
 @TeleOp(name = "Comp TeleOp", group = "Comp")
 public class CompTeleOp extends LinearOpMode{
@@ -34,15 +35,31 @@ public class CompTeleOp extends LinearOpMode{
 
 		while(!isStopRequested()) {
 
-			/*Speed Controls*/
-			if (gamepad1ex.getButton(GamepadKeys.Button.X)) {
-				speedOverride = .25;
-			}
-			if (gamepad1ex.getButton(GamepadKeys.Button.Y)) {
-				speedOverride = 1;
-			}
-			if (controls.speedTrigger.isDown()) {
-				speedOverride = 0.5;
+			/*Speed Control State Machine*/
+			switch(robot.states.speedState) {
+				case FULL_SPEED:
+					speedOverride = 1;
+					if (controls.speedTrigger.isDown()) {
+						robot.states.speedState = States.SpeedState.THREE_QUARTER_SPEED;
+					}
+					if (controls.quarterSpeedButton.isDown()) {
+						robot.states.speedState = States.SpeedState.QUARTER_SPEED;
+					}
+
+				case THREE_QUARTER_SPEED:
+					speedOverride = 0.75;
+					if (!controls.speedTrigger.isDown()) {
+						robot.states.speedState = States.SpeedState.FULL_SPEED;
+					}
+
+				case QUARTER_SPEED:
+					speedOverride = 0.25;
+					if (controls.fullSpeedButton.isDown()) {
+						robot.states.speedState = States.SpeedState.FULL_SPEED;
+					}
+
+				default:
+					robot.states.speedState = States.SpeedState.FULL_SPEED;
 			}
 
 			/*Drivetrain Control*/
