@@ -12,7 +12,7 @@ public class States {
         FORWARD,
         REVERSE
     }
-    public DriveDirectionState driveDirectionState = DriveDirectionState.FORWARD;
+    public DriveDirectionState driveDirectionState;
 
     public enum SpeedState {
         FULL_SPEED,
@@ -20,14 +20,14 @@ public class States {
         HALF_SPEED,
         QUARTER_SPEED
     };
-    public SpeedState speedState = SpeedState.FULL_SPEED;
+    public SpeedState speedState;
 
     public enum IntakeState {
         IDLE,
         INTAKE,
         OUTTAKE
     }
-    public IntakeState intakeState = IntakeState.IDLE;
+    public IntakeState intakeState;
 
     public enum GantryState {
         IDLE,
@@ -35,12 +35,20 @@ public class States {
         REVERSE,
         POSTITION_CONTROL
     }
-    public GantryState gantryState = GantryState.IDLE;
+    public GantryState gantryState;
 
     public enum PusherState {
         RETRACTED,
         EXTENDED
     }
-    public PusherState pusherState = PusherState.RETRACTED;
+    public PusherState pusherState;
+
+    public States() {
+        driveDirectionState = DriveDirectionState.FORWARD;
+        speedState = SpeedState.FULL_SPEED;
+        intakeState = IntakeState.IDLE;
+        gantryState = GantryState.IDLE;
+        pusherState = PusherState.RETRACTED;
+    }
 
 }

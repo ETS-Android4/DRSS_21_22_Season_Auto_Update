@@ -46,21 +46,25 @@ public class CompTeleOp extends LinearOpMode{
 					if (controls.halfSpeedButton.isDown()) {
 						robot.states.speedState = States.SpeedState.QUARTER_SPEED;
 					}
+					break;
 
 				case THREE_QUARTER_SPEED:
 					speedOverride = 0.75;
 					if (!controls.speedTrigger.isDown()) {
 						robot.states.speedState = States.SpeedState.FULL_SPEED;
 					}
+					break;
 
 				case HALF_SPEED:
 					speedOverride = 0.5;
 					if (controls.fullSpeedButton.isDown()) {
 						robot.states.speedState = States.SpeedState.FULL_SPEED;
 					}
+					break;
 
 				default:
 					robot.states.speedState = States.SpeedState.FULL_SPEED;
+					break;
 			}
 
 			/*Drivetrain Control State Machine*/
@@ -77,6 +81,7 @@ public class CompTeleOp extends LinearOpMode{
 					if (controls.driveFlipButton.wasJustPressed()) {
 						robot.states.driveDirectionState = States.DriveDirectionState.REVERSE;
 					}
+					break;
 
 				case REVERSE:
 					robot.drive.setWeightedDrivePower(
@@ -90,9 +95,11 @@ public class CompTeleOp extends LinearOpMode{
 					if (controls.driveFlipButton.wasJustPressed()) {
 						robot.states.driveDirectionState = States.DriveDirectionState.FORWARD;
 					}
+					break;
 
 				default:
 					robot.states.driveDirectionState = States.DriveDirectionState.FORWARD;
+					break;
 			}
 			robot.drive.update();
 			Pose2d poseEstimate = robot.drive.getPoseEstimate();
@@ -107,21 +114,25 @@ public class CompTeleOp extends LinearOpMode{
 					if (controls.outtakeTrigger.isDown()) {
 						robot.states.intakeState = States.IntakeState.OUTTAKE;
 					}
+					break;
 
 				case INTAKE:
 					robot.intake.runIntake(1.0);
 					if (!controls.intakeTrigger.isDown()) {
 						robot.states.intakeState = States.IntakeState.IDLE;
 					}
+					break;
 
 				case OUTTAKE:
 					robot.intake.runIntake(-1.0);
 					if (!controls.outtakeTrigger.isDown()) {
 						robot.states.intakeState = States.IntakeState.IDLE;
 					}
+					break;
 
 				default:
 					robot.states.intakeState = States.IntakeState.IDLE;
+					break;
 			}
 
 			/*Gantry Control State Machine*/
@@ -134,12 +145,14 @@ public class CompTeleOp extends LinearOpMode{
 					if (controls.gantryReverseButton.isDown()) {
 						robot.states.gantryState = States.GantryState.REVERSE;
 					}
+					break;
 
 				case FORWARD:
 					robot.gantry.setGantryPower(1);
 					if (!controls.gantryForwardButton.isDown()) {
 						robot.states.gantryState = States.GantryState.IDLE;
 					}
+					break;
 
 				case REVERSE:
 					robot.gantry.setGantryPower(-1);
@@ -147,9 +160,11 @@ public class CompTeleOp extends LinearOpMode{
 					if (!controls.gantryReverseButton.isDown()) {
 						robot.states.gantryState = States.GantryState.IDLE;
 					}
+					break;
 
 				default:
 					robot.states.gantryState = States.GantryState.IDLE;
+					break;
 			}
 
 			/*Pusher Control State Machine*/
@@ -159,15 +174,18 @@ public class CompTeleOp extends LinearOpMode{
 					if (controls.pusherRetractButton.isDown()) {
 						robot.states.pusherState = States.PusherState.RETRACTED;
 					}
+					break;
 
 				case RETRACTED:
 					robot.pusher.pusherSetPosition(0);
 					if (controls.pusherExtendButton.isDown()) {
 						robot.states.pusherState = States.PusherState.EXTENDED;
 					}
+					break;
 
 				default:
 					robot.states.pusherState = States.PusherState.RETRACTED;
+					break;
 			}
 
 			/*Telemetry*/
