@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.subsystems.states;
 
+import org.firstinspires.ftc.teamcode.subsystems.gantry.Gantry;
+import org.firstinspires.ftc.teamcode.subsystems.pusher.Pusher;
+
 /**
  * Created by Antoine on 11/21/2021
  */
@@ -25,5 +28,19 @@ public class States {
         OUTTAKE
     }
     public IntakeState intakeState = IntakeState.IDLE;
+
+    public enum GantryState {
+        IDLE,
+        FORWARD,
+        REVERSE,
+        POSTITION_CONTROL
+    }
+    public GantryState gantryState = GantryState.IDLE;
+
+    public enum PusherState {
+        RETRACTED,
+        EXTENDED
+    }
+    public PusherState pusherState = PusherState.RETRACTED;
 
 }

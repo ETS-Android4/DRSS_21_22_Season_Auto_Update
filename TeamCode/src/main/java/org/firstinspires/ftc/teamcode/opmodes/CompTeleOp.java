@@ -97,7 +97,7 @@ public class CompTeleOp extends LinearOpMode{
 			robot.drive.update();
 			Pose2d poseEstimate = robot.drive.getPoseEstimate();
 
-			/*Intake Control*/
+			/*Intake Control State Machine*/
 			switch(robot.states.intakeState) {
 				case IDLE:
 					robot.intake.stop();
@@ -122,6 +122,51 @@ public class CompTeleOp extends LinearOpMode{
 
 				default:
 					robot.states.intakeState = States.IntakeState.IDLE;
+			}
+
+			/*Gantry Control State Machine*/
+			switch (robot.states.gantryState) {
+				case IDLE:
+					robot.gantry.stop();
+					if (controls.gantryForwardButton.isDown()) {
+						robot.states.gantryState = States.GantryState.FORWARD;
+					}
+					if (controls.gantryReverseButton.isDown()) {
+						robot.states.gantryState = States.GantryState.REVERSE;
+					}
+
+				case FORWARD:
+					robot.gantry.setGantryPower(1);
+					if (!controls.gantryForwardButton.isDown()) {
+						robot.states.gantryState = States.GantryState.IDLE;
+					}
+
+				case REVERSE:
+					robot.gantry.setGantryPower(-1);
+					if (!controls.gantryReverseButton.isDown()) {
+						robot.states.gantryState = States.GantryState.IDLE;
+					}
+
+				default:
+					robot.states.gantryState = States.GantryState.IDLE;
+			}
+
+			/*Pusher Control State Machine*/
+			switch (robot.states.pusherState) {
+				case EXTENDED:
+					robot.pusher.pusherSetPosition(180);
+					if (controls.pusherRetractButton.isDown()) {
+						robot.states.pusherState = States.PusherState.RETRACTED;
+					}
+
+				case RETRACTED:
+					robot.pusher.pusherSetPosition(0);
+					if (controls.pusherExtendButton.isDown()) {
+						robot.states.pusherState = States.PusherState.EXTENDED;
+					}
+
+				default:
+					robot.states.pusherState = States.PusherState.RETRACTED;
 			}
 
 			/*Telemetry*/

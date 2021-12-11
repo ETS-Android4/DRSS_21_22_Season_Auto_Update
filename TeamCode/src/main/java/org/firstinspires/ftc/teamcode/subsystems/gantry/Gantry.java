@@ -27,11 +27,11 @@ public class Gantry{
 		this.telemetry = telemetry;
 
 		gantryMotor = map.get(DcMotorEx.class, "gantryMotor");
-		gantryMotor.setDirection(DcMotorEx.Direction.FORWARD);
-		gantryMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-		gantryMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+		gantryMotor.setDirection(DcMotorEx.Direction.REVERSE);
+		//gantryMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+		//gantryMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
-		gantryPIDF = new PIDFController(kP, kI, kD, kF);
+		//gantryPIDF = new PIDFController(kP, kI, kD, kF);
 
 		telemetry.addData("Gantry", "Initialized");
 		telemetry.update();
@@ -47,6 +47,12 @@ public class Gantry{
 
 	public void setGantryVelocity(int velocity) {
 		gantryMotor.setVelocity(velocity);
+		return;
+	}
+
+	public void stop() {
+		gantryMotor.setPower(0);
+
 		return;
 	}
 }

@@ -17,6 +17,12 @@ public class Controls{
 	public TriggerReader intakeTrigger;
 	public TriggerReader outtakeTrigger;
 
+	public ButtonReader gantryForwardButton;
+	public ButtonReader gantryReverseButton;
+
+	public ButtonReader pusherExtendButton;
+	public ButtonReader pusherRetractButton;
+
 	public Controls(GamepadEx gamepad1ex, GamepadEx gamepad2ex) {
 
 		/*Speed Controls*/
@@ -46,6 +52,23 @@ public class Controls{
 				gamepad2ex, GamepadKeys.Trigger.RIGHT_TRIGGER
 		);
 
+		/*Gantry Controls*/
+		gantryForwardButton = new ButtonReader(
+				gamepad2ex, GamepadKeys.Button.DPAD_UP
+		);
+
+		gantryReverseButton = new ButtonReader(
+				gamepad2ex, GamepadKeys.Button.DPAD_DOWN
+		);
+
+		/*Pusher Controls*/
+		pusherExtendButton = new ButtonReader(
+				gamepad2ex, GamepadKeys.Button.A
+		);
+		pusherRetractButton = new ButtonReader(
+				gamepad2ex, GamepadKeys.Button.B
+		);
+
 	}
 
 	public void readValues() {
@@ -57,5 +80,11 @@ public class Controls{
 
 		intakeTrigger.readValue();
 		outtakeTrigger.readValue();
+
+		gantryForwardButton.readValue();
+		gantryReverseButton.readValue();
+
+		pusherExtendButton.readValue();
+		pusherRetractButton.readValue();
 	}
 }
