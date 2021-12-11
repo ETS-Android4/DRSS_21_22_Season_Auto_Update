@@ -43,7 +43,7 @@ public class CompTeleOp extends LinearOpMode{
 					if (controls.speedTrigger.isDown()) {
 						robot.states.speedState = States.SpeedState.THREE_QUARTER_SPEED;
 					}
-					if (controls.quarterSpeedButton.isDown()) {
+					if (controls.halfSpeedButton.isDown()) {
 						robot.states.speedState = States.SpeedState.QUARTER_SPEED;
 					}
 
@@ -53,8 +53,8 @@ public class CompTeleOp extends LinearOpMode{
 						robot.states.speedState = States.SpeedState.FULL_SPEED;
 					}
 
-				case QUARTER_SPEED:
-					speedOverride = 0.25;
+				case HALF_SPEED:
+					speedOverride = 0.5;
 					if (controls.fullSpeedButton.isDown()) {
 						robot.states.speedState = States.SpeedState.FULL_SPEED;
 					}
@@ -63,14 +63,37 @@ public class CompTeleOp extends LinearOpMode{
 					robot.states.speedState = States.SpeedState.FULL_SPEED;
 			}
 
-			/*Drivetrain Control*/
-			robot.drive.setWeightedDrivePower(
-					new Pose2d(
-							-gamepad1.left_stick_y * speedOverride,
-							-gamepad1.left_stick_x * speedOverride,
-							-gamepad1.right_stick_x * speedOverride
-					)
-			);
+			/*Drivetrain Control State Machine*/
+			switch (robot.states.driveDirectionState) {
+				case FORWARD:
+					robot.drive.setWeightedDrivePower(
+							new Pose2d(
+									-gamepad1.left_stick_y * speedOverride,
+									-gamepad1.left_stick_x * speedOverride,
+									-gamepad1.right_stick_x * speedOverride
+							)
+					);
+
+					if (controls.driveFlipButton.wasJustPressed()) {
+						robot.states.driveDirectionState = States.DriveDirectionState.REVERSE;
+					}
+
+				case REVERSE:
+					robot.drive.setWeightedDrivePower(
+							new Pose2d(
+									gamepad1.left_stick_y * speedOverride,
+									gamepad1.left_stick_x * speedOverride,
+									gamepad1.right_stick_x * speedOverride
+							)
+					);
+
+					if (controls.driveFlipButton.wasJustPressed()) {
+						robot.states.driveDirectionState = States.DriveDirectionState.FORWARD;
+					}
+
+				default:
+					robot.states.driveDirectionState = States.DriveDirectionState.FORWARD;
+			}
 			robot.drive.update();
 			Pose2d poseEstimate = robot.drive.getPoseEstimate();
 
@@ -96,15 +119,6 @@ public class CompTeleOp extends LinearOpMode{
 					if (!controls.outtakeTrigger.isDown()) {
 						robot.states.intakeState = States.IntakeState.IDLE;
 					}
-
-				case CONTROLLED_INTAKE:
-					robot.intake.calculateRotations(4.0);
-					robot.intake.runIntake(1.0);
-
-					while (robot.intake.intakeMotor.isBusy()) {}
-
-					robot.intake.intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-					robot.states.intakeState = States.IntakeState.IDLE;
 
 				default:
 					robot.states.intakeState = States.IntakeState.IDLE;

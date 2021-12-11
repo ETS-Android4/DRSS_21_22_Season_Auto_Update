@@ -9,8 +9,10 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 public class Controls{
 
 	public TriggerReader speedTrigger;
-	public ButtonReader quarterSpeedButton;
+	public ButtonReader halfSpeedButton;
 	public ButtonReader fullSpeedButton;
+
+	public ButtonReader driveFlipButton;
 
 	public TriggerReader intakeTrigger;
 	public TriggerReader outtakeTrigger;
@@ -22,12 +24,17 @@ public class Controls{
 				gamepad1ex, GamepadKeys.Trigger.RIGHT_TRIGGER
 		);
 
-		quarterSpeedButton = new ButtonReader(
+		halfSpeedButton = new ButtonReader(
 				gamepad1ex, GamepadKeys.Button.X
 		);
 
 		fullSpeedButton = new ButtonReader(
 				gamepad1ex, GamepadKeys.Button.Y
+		);
+
+		/*Drivetrain Direction Controls*/
+		driveFlipButton = new ButtonReader(
+				gamepad1ex, GamepadKeys.Button.START
 		);
 
 		/*Intake Controls*/
@@ -43,8 +50,10 @@ public class Controls{
 
 	public void readValues() {
 		speedTrigger.readValue();
-		quarterSpeedButton.readValue();
+		halfSpeedButton.readValue();
 		fullSpeedButton.readValue();
+
+		driveFlipButton.readValue();
 
 		intakeTrigger.readValue();
 		outtakeTrigger.readValue();

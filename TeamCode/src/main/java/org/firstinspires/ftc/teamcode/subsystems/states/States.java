@@ -5,6 +5,12 @@ package org.firstinspires.ftc.teamcode.subsystems.states;
  */
 public class States {
 
+    public enum DriveDirectionState {
+        FORWARD,
+        REVERSE
+    }
+    public DriveDirectionState driveDirectionState = DriveDirectionState.FORWARD;
+
     public enum SpeedState {
         FULL_SPEED,
         THREE_QUARTER_SPEED,
@@ -16,8 +22,7 @@ public class States {
     public enum IntakeState {
         IDLE,
         INTAKE,
-        OUTTAKE,
-        CONTROLLED_INTAKE
+        OUTTAKE
     }
     public IntakeState intakeState = IntakeState.IDLE;
 

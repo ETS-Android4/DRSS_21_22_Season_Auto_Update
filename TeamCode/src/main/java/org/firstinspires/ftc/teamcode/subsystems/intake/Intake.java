@@ -13,8 +13,6 @@ public class Intake{
 
 	public DcMotorEx intakeMotor;
 
-	public int COUNTS_PER_ROTATION = 1;
-
 	Telemetry telemetry;
 	TelemetryPacket packet = new TelemetryPacket();
 	FtcDashboard dashboard = FtcDashboard.getInstance();
@@ -24,8 +22,6 @@ public class Intake{
 
 		intakeMotor = map.get(DcMotorEx.class, "intakeMotor");
 		intakeMotor.setDirection(DcMotorEx.Direction.FORWARD);
-		intakeMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-		intakeMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
 
 
 		telemetry.addData("Intake", "Initialized");
@@ -46,24 +42,4 @@ public class Intake{
 
 		return;
 	}
-
-	public void calculateRotations(double rotations) {
-		intakeMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-		intakeMotor.setTargetPosition((int) (intakeMotor.getCurrentPosition() + (rotations*COUNTS_PER_ROTATION)));
-		intakeMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-		return;
-	}
-
-	/**public void runIntake(double rotations, double speed) {
-		intakeMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-		intakeMotor.setTargetPosition((int) (intakeMotor.getCurrentPosition() + (rotations*COUNTS_PER_ROTATION)));
-		intakeMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-		intakeMotor.setPower(speed);
-		while (intakeMotor.isBusy())
-		intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-		return;
-	}**/
 }
