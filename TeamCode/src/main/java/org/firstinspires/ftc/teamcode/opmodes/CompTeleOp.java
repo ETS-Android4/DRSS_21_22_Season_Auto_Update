@@ -143,6 +143,7 @@ public class CompTeleOp extends LinearOpMode{
 
 				case REVERSE:
 					robot.gantry.setGantryPower(-1);
+					robot.states.pusherState = States.PusherState.RETRACTED;
 					if (!controls.gantryReverseButton.isDown()) {
 						robot.states.gantryState = States.GantryState.IDLE;
 					}
