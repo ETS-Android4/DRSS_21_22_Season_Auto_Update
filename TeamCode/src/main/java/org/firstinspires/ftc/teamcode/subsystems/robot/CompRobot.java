@@ -31,10 +31,10 @@ public class CompRobot{
 		this.telemetry = telemetry;
 
 		drive = new CompMecanumDrive(map);
-		/*intake = new Intake(map, telemetry);
+		intake = new Intake(map, telemetry);
 		lift = new Lift(map, telemetry);
 		gantry = new Gantry(map, telemetry);
-		pusher = new Pusher(map, telemetry);*/
+		pusher = new Pusher(map, telemetry);
 
 		states = new States();
 
