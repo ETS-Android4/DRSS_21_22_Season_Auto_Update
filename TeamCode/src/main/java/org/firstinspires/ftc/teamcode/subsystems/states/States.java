@@ -33,7 +33,9 @@ public class States {
         IDLE,
         FORWARD,
         REVERSE,
-        POSTITION_CONTROL
+        INTAKE_DOCK,
+        DRIVER_POSITION,
+        POSITION_CONTROL
     }
     public GantryState gantryState;
 
@@ -43,12 +45,34 @@ public class States {
     }
     public PusherState pusherState;
 
+    public enum LiftState {
+        IDLE,
+        EXTEND,
+        RETRACT,
+        HOME,
+        POSITION_CONTROL
+    }
+    public LiftState liftState;
+
+    public enum LiftControlState {
+        HOLD,
+        UPWARDS,
+        DOWNWARDS,
+        LEVEL_ONE,
+        LEVEL_TWO,
+        LEVEL_THREE,
+        CAPSTONE
+    }
+    public LiftControlState liftControlState;
+
     public States() {
         driveDirectionState = DriveDirectionState.FORWARD;
         speedState = SpeedState.FULL_SPEED;
         intakeState = IntakeState.IDLE;
         gantryState = GantryState.IDLE;
         pusherState = PusherState.RETRACTED;
+        liftState = LiftState.IDLE;
+        liftControlState = LiftControlState.HOLD;
     }
 
 }

@@ -88,7 +88,7 @@ public class CompTeleOp extends LinearOpMode{
 							new Pose2d(
 									gamepad1.left_stick_y * speedOverride,
 									gamepad1.left_stick_x * speedOverride,
-									gamepad1.right_stick_x * speedOverride
+									-gamepad1.right_stick_x * speedOverride
 							)
 					);
 
@@ -185,6 +185,37 @@ public class CompTeleOp extends LinearOpMode{
 
 				default:
 					robot.states.pusherState = States.PusherState.RETRACTED;
+					break;
+			}
+
+			/*Lift Control State Machine */
+			switch (robot.states.liftState) {
+				case IDLE:
+					robot.lift.stop();
+					if (gamepad2ex.getLeftY() >= 0.1) {
+						robot.states.liftState = States.LiftState.EXTEND;
+					}
+					else if (gamepad2ex.getLeftY() <= -0.1) {
+						robot.states.liftState = States.LiftState.RETRACT;
+					}
+					break;
+
+				case EXTEND:
+					robot.lift.setLiftPower(gamepad2ex.getLeftY());
+					if (gamepad2ex.getLeftY() <= 0.1) {
+						robot.states.liftState = States.LiftState.IDLE;
+					}
+					break;
+
+				case RETRACT:
+					robot.lift.setLiftPower(gamepad2ex.getLeftY());
+					if (gamepad2ex.getLeftY() >= -0.1) {
+						robot.states.liftState = States.LiftState.IDLE;
+					}
+					break;
+
+				default:
+					robot.states.liftState = States.LiftState.IDLE;
 					break;
 			}
 

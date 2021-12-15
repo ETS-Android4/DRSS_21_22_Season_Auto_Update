@@ -28,6 +28,7 @@ public class Gantry{
 
 		gantryMotor = map.get(DcMotorEx.class, "gantryMotor");
 		gantryMotor.setDirection(DcMotorEx.Direction.REVERSE);
+		gantryMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 		//gantryMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 		//gantryMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
@@ -42,11 +43,6 @@ public class Gantry{
 
 	public void setGantryPower(double power) {
 		gantryMotor.setPower(power);
-		return;
-	}
-
-	public void setGantryVelocity(int velocity) {
-		gantryMotor.setVelocity(velocity);
 		return;
 	}
 

@@ -28,10 +28,11 @@ public class Lift{
 
 		liftMotor = map.get(DcMotorEx.class, "liftMotor");
 		liftMotor.setDirection(DcMotorEx.Direction.FORWARD);
-		liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-		liftMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+		liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+		//liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+		//liftMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
-		liftPIDF = new PIDFController(kP, kI, kD, kF);
+		//liftPIDF = new PIDFController(kP, kI, kD, kF);
 
 		telemetry.addData("Lift", "Initialized");
 		telemetry.update();
@@ -46,8 +47,8 @@ public class Lift{
 		return;
 	}
 
-	public void setLiftVelocity(int velocity) {
-		liftMotor.setVelocity(velocity);
+	public void stop() {
+		liftMotor.setPower(0);
 
 		return;
 	}
