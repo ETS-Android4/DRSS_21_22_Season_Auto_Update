@@ -1,2 +1,3 @@
+include ':RoadRunnerVisualizer'
 include ':FtcRobotController'
 include ':TeamCode'
