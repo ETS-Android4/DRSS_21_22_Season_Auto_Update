@@ -189,7 +189,7 @@ public class CompTeleOp extends LinearOpMode{
 			}
 
 			/*Lift Control State Machine */
-			switch (robot.states.liftState) {
+			/*switch (robot.states.liftState) {
 				case IDLE:
 					robot.lift.stop();
 					if (gamepad2ex.getLeftY() >= 0.1) {
@@ -217,12 +217,14 @@ public class CompTeleOp extends LinearOpMode{
 				default:
 					robot.states.liftState = States.LiftState.IDLE;
 					break;
-			}
+			}*/
 
 			/*Telemetry*/
 			telemetry.addData("x", poseEstimate.getX());
 			telemetry.addData("y", poseEstimate.getY());
 			telemetry.addData("heading", poseEstimate.getHeading());
+
+			telemetry.addData("Lift Height", robot.lift.getHeight());
 			telemetry.update();
 
 			/*End of loop updates*/

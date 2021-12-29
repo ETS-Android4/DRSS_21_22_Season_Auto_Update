@@ -5,19 +5,25 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.arcrobotics.ftclib.controller.PIDFController;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 public class Lift{
 
 	DcMotorEx liftMotor;
+	DistanceSensor liftHeightSensor;
 
 	PIDFController liftPIDF;
-	double kP = 1;
-	double kI = 1;
-	double kD = 1;
-	double kF = 1;
+	double kP = 0;
+	double kI = 0;
+	double kD = 0;
+	double kF = 0;
+
+	double Z_OFFSET = 0;
 
 	Telemetry telemetry;
 	TelemetryPacket packet = new TelemetryPacket();
@@ -29,10 +35,10 @@ public class Lift{
 		liftMotor = map.get(DcMotorEx.class, "liftMotor");
 		liftMotor.setDirection(DcMotorEx.Direction.FORWARD);
 		liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-		//liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-		//liftMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
-		//liftPIDF = new PIDFController(kP, kI, kD, kF);
+		liftHeightSensor = map.get(DistanceSensor.class, "liftHeightSensor");
+
+		liftPIDF = new PIDFController(kP, kI, kD, kF);
 
 		telemetry.addData("Lift", "Initialized");
 		telemetry.update();
@@ -51,5 +57,19 @@ public class Lift{
 		liftMotor.setPower(0);
 
 		return;
+	}
+
+	public double getHeight() {
+		return liftHeightSensor.getDistance(DistanceUnit.INCH);
+	}
+
+	public void setHeight(double height) {
+		liftPIDF.setSetPoint(height);
+	}
+
+	public void update() {
+		double output = Range.clip(liftPIDF.calculate(getHeight()), -1, 1);
+
+		liftMotor.setPower(output);
 	}
 }
