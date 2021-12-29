@@ -49,15 +49,12 @@ public class States {
         IDLE,
         EXTEND,
         RETRACT,
-        HOME,
         POSITION_CONTROL
     }
     public LiftState liftState;
 
     public enum LiftControlState {
-        HOLD,
-        UPWARDS,
-        DOWNWARDS,
+        HOME,
         LEVEL_ONE,
         LEVEL_TWO,
         LEVEL_THREE,
@@ -72,7 +69,7 @@ public class States {
         gantryState = GantryState.IDLE;
         pusherState = PusherState.RETRACTED;
         liftState = LiftState.IDLE;
-        liftControlState = LiftControlState.HOLD;
+        liftControlState = LiftControlState.LEVEL_TWO;
     }
 
 }

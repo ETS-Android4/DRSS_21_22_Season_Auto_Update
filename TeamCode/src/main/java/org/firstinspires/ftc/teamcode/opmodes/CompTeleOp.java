@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
@@ -23,6 +26,10 @@ public class CompTeleOp extends LinearOpMode{
 	CompRobot robot;
 
 	double speedOverride = 1.0;
+	public static double setPoint = 0;
+
+	TelemetryPacket packet = new TelemetryPacket();
+	FtcDashboard dashboard = FtcDashboard.getInstance();
 
 	@Override
 	public void runOpMode() throws InterruptedException{
@@ -188,6 +195,33 @@ public class CompTeleOp extends LinearOpMode{
 					break;
 			}
 
+			/*Lift Height State Machine*/
+			switch (robot.states.liftControlState) {
+				case HOME:
+					robot.lift.setHeight(0);
+					break;
+
+				case LEVEL_ONE:
+					robot.lift.setHeight(5);
+					break;
+
+				case LEVEL_TWO:
+					robot.lift.setHeight(10);
+					break;
+
+				case LEVEL_THREE:
+					robot.lift.setHeight(15);
+					break;
+
+				case CAPSTONE:
+					robot.lift.setHeight(13);
+					break;
+
+				default:
+					robot.states.liftControlState = States.LiftControlState.HOME;
+					break;
+			}
+
 			/*Lift Control State Machine */
 			switch (robot.states.liftState) {
 				case IDLE:
@@ -218,11 +252,11 @@ public class CompTeleOp extends LinearOpMode{
 					break;
 
 				case POSITION_CONTROL:
-					robot.lift.setHeight(10);
+					robot.lift.update();
 					if (controls.liftButton.wasJustPressed()) {
 						robot.states.liftState = States.LiftState.IDLE;
 					}
-					telemetry.addData("Postion Control", ";)");
+					break;
 
 				default:
 					robot.states.liftState = States.LiftState.IDLE;
@@ -230,11 +264,12 @@ public class CompTeleOp extends LinearOpMode{
 			}
 
 			/*Telemetry*/
+			telemetry.addData("Lift Height", robot.lift.getHeight());
+
 			telemetry.addData("x", poseEstimate.getX());
 			telemetry.addData("y", poseEstimate.getY());
 			telemetry.addData("heading", poseEstimate.getHeading());
 
-			telemetry.addData("Lift Height", robot.lift.getHeight());
 			telemetry.update();
 
 			/*End of loop updates*/
