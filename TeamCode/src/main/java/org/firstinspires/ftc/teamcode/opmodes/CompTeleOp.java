@@ -189,7 +189,7 @@ public class CompTeleOp extends LinearOpMode{
 			}
 
 			/*Lift Control State Machine */
-			/*switch (robot.states.liftState) {
+			switch (robot.states.liftState) {
 				case IDLE:
 					robot.lift.stop();
 					if (gamepad2ex.getLeftY() >= 0.1) {
@@ -197,6 +197,9 @@ public class CompTeleOp extends LinearOpMode{
 					}
 					else if (gamepad2ex.getLeftY() <= -0.1) {
 						robot.states.liftState = States.LiftState.RETRACT;
+					}
+					if (controls.liftButton.wasJustPressed()) {
+						robot.states.liftState = States.LiftState.POSITION_CONTROL;
 					}
 					break;
 
@@ -214,10 +217,17 @@ public class CompTeleOp extends LinearOpMode{
 					}
 					break;
 
+				case POSITION_CONTROL:
+					robot.lift.setHeight(10);
+					if (controls.liftButton.wasJustPressed()) {
+						robot.states.liftState = States.LiftState.IDLE;
+					}
+					telemetry.addData("Postion Control", ";)");
+
 				default:
 					robot.states.liftState = States.LiftState.IDLE;
 					break;
-			}*/
+			}
 
 			/*Telemetry*/
 			telemetry.addData("x", poseEstimate.getX());

@@ -23,6 +23,8 @@ public class Controls{
 	public ButtonReader pusherExtendButton;
 	public ButtonReader pusherRetractButton;
 
+	public ButtonReader liftButton;
+
 	public Controls(GamepadEx gamepad1ex, GamepadEx gamepad2ex) {
 
 		/*Speed Controls*/
@@ -69,6 +71,11 @@ public class Controls{
 				gamepad2ex, GamepadKeys.Button.B
 		);
 
+		/*Lift Controls*/
+		liftButton = new ButtonReader(
+				gamepad2ex, GamepadKeys.Button.Y
+		);
+
 	}
 
 	public void readValues() {
@@ -86,5 +93,7 @@ public class Controls{
 
 		pusherExtendButton.readValue();
 		pusherRetractButton.readValue();
+
+		liftButton.readValue();
 	}
 }

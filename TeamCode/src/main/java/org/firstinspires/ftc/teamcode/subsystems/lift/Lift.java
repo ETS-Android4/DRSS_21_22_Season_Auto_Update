@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.subsystems.lift;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.arcrobotics.ftclib.controller.PIDFController;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -12,18 +13,19 @@ import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
+@Config
 public class Lift{
 
 	DcMotorEx liftMotor;
 	DistanceSensor liftHeightSensor;
 
 	PIDFController liftPIDF;
-	double kP = 0;
-	double kI = 0;
-	double kD = 0;
-	double kF = 0;
+	public static double kP = 0;
+	public static double kI = 0;
+	public static double kD = 0;
+	public static double kF = 0;
 
-	double Z_OFFSET = 0;
+	public static double Z_OFFSET = 0;
 
 	Telemetry telemetry;
 	TelemetryPacket packet = new TelemetryPacket();
@@ -64,7 +66,7 @@ public class Lift{
 	}
 
 	public void setHeight(double height) {
-		liftPIDF.setSetPoint(height);
+		liftPIDF.setSetPoint(height + Z_OFFSET);
 	}
 
 	public void update() {
