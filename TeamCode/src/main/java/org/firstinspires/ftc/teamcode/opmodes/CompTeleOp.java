@@ -172,15 +172,17 @@ public class CompTeleOp extends LinearOpMode{
 
 				case DOCK:
 					robot.gantry.setPositon(robot.gantry.DOCK_POSTION);
+					robot.gantry.update();
 					break;
 
 				case DRIVER_POSITION:
-					double CalculatedPosition = Range.clip(
+					double CalculatedPosition = robot.gantry.DRIVER_POSTION_MIN + Range.clip(
 							(robot.gantry.DRIVER_POSITON_RANGE * gamepad2ex.getRightY()),
 							robot.gantry.DRIVER_POSTION_MIN,
 							robot.gantry.DRIVER_POSTION_MAX
 					);
 					robot.gantry.setPositon(CalculatedPosition);
+					robot.gantry.update();
 					break;
 
 				default:
