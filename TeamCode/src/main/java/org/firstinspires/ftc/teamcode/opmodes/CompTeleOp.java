@@ -10,6 +10,7 @@ import com.arcrobotics.ftclib.gamepad.TriggerReader;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -27,7 +28,8 @@ public class CompTeleOp extends LinearOpMode{
 	CompRobot robot;
 
 	double speedOverride = 1.0;
-	public static double setPoint = 0;
+
+	ElapsedTime intakeTimer = new ElapsedTime();
 
 	TelemetryPacket packet = new TelemetryPacket();
 	FtcDashboard dashboard = FtcDashboard.getInstance();
@@ -38,7 +40,7 @@ public class CompTeleOp extends LinearOpMode{
 		gamepad2ex = new GamepadEx(gamepad2);
 		controls = new Controls(gamepad1ex, gamepad2ex);
 
-		robot = new CompRobot(hardwareMap, telemetry);
+		robot = new CompRobot(hardwareMap, telemetry, false);
 
 		waitForStart();
 
@@ -129,11 +131,23 @@ public class CompTeleOp extends LinearOpMode{
 					if (!controls.intakeTrigger.isDown()) {
 						robot.states.intakeState = States.IntakeState.IDLE;
 					}
+					/* TODO: Tune the color sensor to reliably tell when there is something loaded in the box
+					if (robot.intake.isLoaded()) {
+						intakeTimer.reset();
+						robot.states.intakeState = States.IntakeState.UNLOAD;
+					}*/
 					break;
 
 				case OUTTAKE:
 					robot.intake.runIntake(-1.0);
 					if (!controls.outtakeTrigger.isDown()) {
+						robot.states.intakeState = States.IntakeState.IDLE;
+					}
+					break;
+
+				case UNLOAD:
+					robot.intake.runIntake(-1.0);
+					if (intakeTimer.seconds() > 2) {
 						robot.states.intakeState = States.IntakeState.IDLE;
 					}
 					break;
@@ -214,7 +228,7 @@ public class CompTeleOp extends LinearOpMode{
 			/*Lift Height State Machine*/
 			switch (robot.states.liftControlState) {
 				case HOME:
-					robot.lift.setHeight(0);
+					robot.lift.setHeight(10);
 					break;
 
 				case LEVEL_ONE:
@@ -284,23 +298,41 @@ public class CompTeleOp extends LinearOpMode{
 			}
 
 			/*Telemetry*/
-			telemetry.addData("Lift Height", robot.lift.getHeight());
-			telemetry.addData("Lift Level", robot.states.liftControlState.name());
+			telemetry.addLine("Lift")
+					.addData("Height", robot.lift.getHeight())
+					.addData("Level", robot.states.liftControlState.name());
 
-			telemetry.addData("Gantry Position", robot.gantry.getPosition());
+			telemetry.addLine("Gantry")
+					.addData("Position", robot.gantry.getPosition());
 
-			telemetry.addData("x", poseEstimate.getX());
-			telemetry.addData("y", poseEstimate.getY());
-			telemetry.addData("heading", poseEstimate.getHeading());
+			telemetry.addLine("Intake")
+					.addData("Red", robot.intake.freightSensor.red())
+					.addData("Green", robot.intake.freightSensor.green())
+					.addData("Blue", robot.intake.freightSensor.blue())
+					.addData("Freight Loaded", robot.intake.isLoaded());
+
+			telemetry.addLine("Position")
+					.addData("x", poseEstimate.getX())
+					.addData("y", poseEstimate.getY())
+					.addData("heading", poseEstimate.getHeading());
 
 			telemetry.update();
 
 			/*Dashboard*/
-			packet.put("Lift Height", robot.lift.getHeight());
-			packet.put("Lift Level", robot.states.liftControlState.name());
+			packet.addLine("Lift");
+			packet.put("Height", robot.lift.getHeight());
+			packet.put("Level", robot.states.liftControlState.name());
 
-			packet.put("Gantry Position", robot.gantry.getPosition());
+			packet.addLine("Gantry");
+			packet.put("Position", robot.gantry.getPosition());
 
+			packet.addLine("Intake");
+			packet.put("Red", robot.intake.freightSensor.red());
+			packet.put("Green", robot.intake.freightSensor.green());
+			packet.put("Blue", robot.intake.freightSensor.blue());
+			packet.put("Freight Loaded", robot.intake.isLoaded());
+
+			packet.addLine("Position");
 			packet.put("x", poseEstimate.getX());
 			packet.put("y", poseEstimate.getY());
 			packet.put("heading (deg)", Math.toDegrees(poseEstimate.getHeading()));

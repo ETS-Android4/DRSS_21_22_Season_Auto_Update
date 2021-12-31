@@ -52,14 +52,10 @@ public class Lift{
 
 	public void setLiftPower(double power) {
 		liftMotor.setPower(power);
-
-		return;
 	}
 
 	public void stop() {
 		liftMotor.setPower(0);
-
-		return;
 	}
 
 	public double getHeight() {

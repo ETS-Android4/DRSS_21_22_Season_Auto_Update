@@ -38,25 +38,17 @@ public class Pusher{
 
 	public void pusherSetPosition(float angle) {
 		pushServo.turnToAngle(angle);
-
-		return;
 	}
 
 	public void pusherSetPosition(double position) {
 		pushServo.setPosition(position);
-
-		return;
 	}
 
 	public void pusherMove(float angle) {
 		pushServo.rotateByAngle(angle);
-
-		return;
 	}
 
 	public void pusherMove(double distance) {
 		pushServo.rotateBy(distance);
-
-		return;
 	}
 }

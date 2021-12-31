@@ -25,7 +25,8 @@ public class States {
     public enum IntakeState {
         IDLE,
         INTAKE,
-        OUTTAKE
+        OUTTAKE,
+        UNLOAD
     }
     public IntakeState intakeState;
 

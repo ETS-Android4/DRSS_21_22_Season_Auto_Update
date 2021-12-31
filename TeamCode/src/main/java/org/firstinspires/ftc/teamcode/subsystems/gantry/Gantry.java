@@ -15,7 +15,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 @Config
 public class Gantry{
 
-	DcMotorEx gantryMotor;
+	public DcMotorEx gantryMotor;
 
 	PIDController gantryPID;
 	public static double kP = 0;
@@ -38,7 +38,6 @@ public class Gantry{
 		gantryMotor = map.get(DcMotorEx.class, "gantryMotor");
 		gantryMotor.setDirection(DcMotorEx.Direction.REVERSE);
 		gantryMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-		gantryMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 		gantryMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
 		gantryPID = new PIDController(kP, kI, kD);
@@ -52,13 +51,10 @@ public class Gantry{
 
 	public void setGantryPower(double power) {
 		gantryMotor.setPower(power);
-		return;
 	}
 
 	public void stop() {
 		gantryMotor.setPower(0);
-
-		return;
 	}
 
 	public double getPosition() {
