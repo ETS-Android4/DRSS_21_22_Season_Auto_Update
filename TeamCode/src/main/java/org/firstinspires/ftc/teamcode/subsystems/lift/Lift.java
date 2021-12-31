@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.arcrobotics.ftclib.controller.PController;
+import com.arcrobotics.ftclib.controller.PIDController;
 import com.arcrobotics.ftclib.controller.PIDFController;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -20,8 +21,10 @@ public class Lift{
 	DcMotorEx liftMotor;
 	DistanceSensor liftHeightSensor;
 
-	PController liftPIDF;
+	PIDController liftPID;
 	public static double kP = 0.3;
+	public static double kI = 0.0;
+	public static double kD = 0.0;
 
 	public static double Z_OFFSET = 0.8;
 
@@ -38,7 +41,7 @@ public class Lift{
 
 		liftHeightSensor = map.get(DistanceSensor.class, "liftHeightSensor");
 
-		liftPIDF = new PController(kP);
+		liftPID = new PIDController(kP, kI, kD);
 
 		telemetry.addData("Lift", "Initialized");
 		telemetry.update();
@@ -60,21 +63,27 @@ public class Lift{
 	}
 
 	public double getHeight() {
-		return (liftHeightSensor.getDistance(DistanceUnit.INCH)-Z_OFFSET);
+		return (liftHeightSensor.getDistance(DistanceUnit.INCH) - Z_OFFSET);
 	}
 
 	public void setHeight(double height) {
-		liftPIDF.setSetPoint(height + Z_OFFSET);
+		liftPID.setSetPoint(height);
+	}
+
+	public void updateLiftPID() {
+		liftPID.setP(kP);
+		liftPID.setI(kI);
+		liftPID.setD(kD);
 	}
 
 	public void update() {
-		double output = Range.clip(liftPIDF.calculate(getHeight()), -1, 1);
+		updateLiftPID();
+		double output = Range.clip(
+				liftPID.calculate(getHeight()),
+				-1,
+				1
+		);
 
 		liftMotor.setPower(output);
-		updateLiftP();
-	}
-
-	public void updateLiftP() {
-		liftPIDF.setP(kP);
 	}
 }

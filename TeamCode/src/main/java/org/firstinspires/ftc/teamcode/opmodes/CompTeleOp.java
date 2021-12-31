@@ -10,6 +10,7 @@ import com.arcrobotics.ftclib.gamepad.TriggerReader;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.subsystems.controls.Controls;
@@ -169,6 +170,19 @@ public class CompTeleOp extends LinearOpMode{
 					}
 					break;
 
+				case DOCK:
+					robot.gantry.setPositon(robot.gantry.DOCK_POSTION);
+					break;
+
+				case DRIVER_POSITION:
+					double CalculatedPosition = Range.clip(
+							(robot.gantry.DRIVER_POSITON_RANGE * gamepad2ex.getRightY()),
+							robot.gantry.DRIVER_POSTION_MIN,
+							robot.gantry.DRIVER_POSTION_MAX
+					);
+					robot.gantry.setPositon(CalculatedPosition);
+					break;
+
 				default:
 					robot.states.gantryState = States.GantryState.IDLE;
 					break;
@@ -226,6 +240,7 @@ public class CompTeleOp extends LinearOpMode{
 			switch (robot.states.liftState) {
 				case IDLE:
 					robot.lift.stop();
+
 					if (gamepad2ex.getLeftY() >= 0.1) {
 						robot.states.liftState = States.LiftState.EXTEND;
 					}
@@ -239,6 +254,7 @@ public class CompTeleOp extends LinearOpMode{
 
 				case EXTEND:
 					robot.lift.setLiftPower(gamepad2ex.getLeftY());
+
 					if (gamepad2ex.getLeftY() <= 0.1) {
 						robot.states.liftState = States.LiftState.IDLE;
 					}
@@ -246,6 +262,7 @@ public class CompTeleOp extends LinearOpMode{
 
 				case RETRACT:
 					robot.lift.setLiftPower(gamepad2ex.getLeftY());
+
 					if (gamepad2ex.getLeftY() >= -0.1) {
 						robot.states.liftState = States.LiftState.IDLE;
 					}
@@ -253,6 +270,7 @@ public class CompTeleOp extends LinearOpMode{
 
 				case POSITION_CONTROL:
 					robot.lift.update();
+
 					if (controls.liftButton.wasJustPressed()) {
 						robot.states.liftState = States.LiftState.IDLE;
 					}
@@ -265,12 +283,27 @@ public class CompTeleOp extends LinearOpMode{
 
 			/*Telemetry*/
 			telemetry.addData("Lift Height", robot.lift.getHeight());
+			telemetry.addData("Lift Level", robot.states.liftControlState.name());
+
+			telemetry.addData("Gantry Position", robot.gantry.getPosition());
 
 			telemetry.addData("x", poseEstimate.getX());
 			telemetry.addData("y", poseEstimate.getY());
 			telemetry.addData("heading", poseEstimate.getHeading());
 
 			telemetry.update();
+
+			/*Dashboard*/
+			packet.put("Lift Height", robot.lift.getHeight());
+			packet.put("Lift Level", robot.states.liftControlState.name());
+
+			packet.put("Gantry Position", robot.gantry.getPosition());
+
+			packet.put("x", poseEstimate.getX());
+			packet.put("y", poseEstimate.getY());
+			packet.put("heading (deg)", Math.toDegrees(poseEstimate.getHeading()));
+
+			dashboard.sendTelemetryPacket(packet);
 
 			/*End of loop updates*/
 			gamepad1ex.readButtons();

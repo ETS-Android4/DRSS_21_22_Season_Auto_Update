@@ -33,7 +33,7 @@ public class States {
         IDLE,
         FORWARD,
         REVERSE,
-        INTAKE_DOCK,
+        DOCK,
         DRIVER_POSITION,
         POSITION_CONTROL
     }
