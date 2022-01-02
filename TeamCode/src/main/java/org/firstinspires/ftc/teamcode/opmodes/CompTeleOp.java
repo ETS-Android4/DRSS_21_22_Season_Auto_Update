@@ -40,7 +40,7 @@ public class CompTeleOp extends LinearOpMode{
 		gamepad2ex = new GamepadEx(gamepad2);
 		controls = new Controls(gamepad1ex, gamepad2ex);
 
-		robot = new CompRobot(hardwareMap, telemetry, false);
+		robot = new CompRobot(hardwareMap, telemetry, true);
 
 		waitForStart();
 

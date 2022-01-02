@@ -22,6 +22,11 @@ public class Gantry{
 	public static double kI = 0;
 	public static double kD = 0;
 
+	public static double COUNTS_PER_ROTATION = 288;
+	public static double PINION_DIAMETER = 5;
+	public static double PINION_CIRCUMFERENCE = PINION_DIAMETER * 3.14159;
+	public static double COUNTS_PER_INCH = PINION_CIRCUMFERENCE * COUNTS_PER_ROTATION;
+
 	public static double DOCK_POSTION = 0;
 	public static double DRIVER_POSTION_MIN = 0;
 	public static double DRIVER_POSTION_MAX = 0;
@@ -61,8 +66,8 @@ public class Gantry{
 		return gantryMotor.getCurrentPosition();
 	}
 
-	public void setPositon(double position) {
-		gantryPID.setSetPoint(position);
+	public void setPositon(double inches) {
+		gantryPID.setSetPoint(inches * COUNTS_PER_INCH);
 	}
 
 	public void updateGantryPID() {

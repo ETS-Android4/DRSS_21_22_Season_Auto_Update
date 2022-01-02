@@ -62,8 +62,8 @@ public class Lift{
 		return (liftHeightSensor.getDistance(DistanceUnit.INCH) - Z_OFFSET);
 	}
 
-	public void setHeight(double height) {
-		liftPID.setSetPoint(height);
+	public void setHeight(double inches) {
+		liftPID.setSetPoint(inches);
 	}
 
 	public void updateLiftPID() {
