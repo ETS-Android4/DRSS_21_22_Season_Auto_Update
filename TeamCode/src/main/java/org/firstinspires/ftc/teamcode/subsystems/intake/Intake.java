@@ -30,6 +30,7 @@ public class Intake{
 		intakeMotor = map.get(DcMotorEx.class, "intakeMotor");
 		intakeMotor.setDirection(DcMotorEx.Direction.FORWARD);
 
+		freightSensor = map.get(ColorSensor.class, "freightSensor");
 
 		telemetry.addData("Intake", "Initialized");
 		telemetry.update();

@@ -300,6 +300,7 @@ public class CompTeleOp extends LinearOpMode{
 			/*Telemetry*/
 			telemetry.addLine("Lift")
 					.addData("Height", robot.lift.getHeight())
+					.addData("Filtered Height", robot.lift.getFilteredHeight())
 					.addData("Level", robot.states.liftControlState.name());
 
 			telemetry.addLine("Gantry")
@@ -321,6 +322,7 @@ public class CompTeleOp extends LinearOpMode{
 			/*Dashboard*/
 			packet.addLine("Lift");
 			packet.put("Height", robot.lift.getHeight());
+			packet.put("Filtered Height", robot.lift.getFilteredHeight());
 			packet.put("Level", robot.states.liftControlState.name());
 
 			packet.addLine("Gantry");

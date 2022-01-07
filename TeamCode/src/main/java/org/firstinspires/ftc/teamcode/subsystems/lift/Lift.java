@@ -1,5 +1,9 @@
 package org.firstinspires.ftc.teamcode.subsystems.lift;
 
+import com.ThermalEquilibrium.homeostasis.Controllers.Feedback.PIDEx;
+import com.ThermalEquilibrium.homeostasis.Filters.Estimators.Estimator;
+import com.ThermalEquilibrium.homeostasis.Filters.Estimators.KalmanEstimator;
+import com.ThermalEquilibrium.homeostasis.Parameters.PIDCoefficientsEx;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
@@ -15,16 +19,35 @@ import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
+import java.util.function.DoubleSupplier;
+
 @Config
 public class Lift{
 
 	DcMotorEx liftMotor;
 	DistanceSensor liftHeightSensor;
 
-	PIDController liftPID;
+	public double setPoint = 0;
+
+	PIDEx liftPID;
+	PIDCoefficientsEx liftPIDCoefficients;
 	public static double kP = 0.3;
 	public static double kI = 0.0;
 	public static double kD = 0.0;
+	public static double integralSumMax = 1 / kI;
+	public static double stabilityThreshold = 0.0;
+	public static double lowPassGain = 0.0;
+
+	public static double Q = 0.3;
+	public static double R = 3;
+	public static int N = 3;
+	DoubleSupplier heightSensor = new DoubleSupplier() {
+		@Override
+		public double getAsDouble() {
+			return getHeight();
+		}
+	};
+	Estimator heightFilter = new KalmanEstimator(heightSensor, Q, R, N);
 
 	public static double Z_OFFSET = 0.8;
 
@@ -41,7 +64,8 @@ public class Lift{
 
 		liftHeightSensor = map.get(DistanceSensor.class, "liftHeightSensor");
 
-		liftPID = new PIDController(kP, kI, kD);
+		liftPIDCoefficients = new PIDCoefficientsEx(kP, kI, kD, integralSumMax, stabilityThreshold, lowPassGain);
+		liftPID = new PIDEx(liftPIDCoefficients);
 
 		telemetry.addData("Lift", "Initialized");
 		telemetry.update();
@@ -62,22 +86,29 @@ public class Lift{
 		return (liftHeightSensor.getDistance(DistanceUnit.INCH) - Z_OFFSET);
 	}
 
+	public double getFilteredHeight() {
+		return heightFilter.update();
+	}
+
 	public void setHeight(double inches) {
-		liftPID.setSetPoint(inches);
+		setPoint = inches;
 	}
 
 	public void updateLiftPID() {
-		liftPID.setP(kP);
-		liftPID.setI(kI);
-		liftPID.setD(kD);
+		liftPIDCoefficients.Kp = kP;
+		liftPIDCoefficients.Ki = kI;
+		liftPIDCoefficients.Kd = kD;
+		liftPIDCoefficients.maximumIntegralSum = integralSumMax;
+		liftPIDCoefficients.stabilityThreshold = stabilityThreshold;
+		liftPIDCoefficients.lowPassGain = lowPassGain;
 	}
 
 	public void update() {
 		updateLiftPID();
 		double output = Range.clip(
-				liftPID.calculate(getHeight()),
-				-1,
-				1
+				liftPID.calculate(setPoint, getHeight()),
+				-1.0,
+				1.0
 		);
 
 		liftMotor.setPower(output);
