@@ -34,16 +34,16 @@ public class Lift{
 	public static double kP = 0.3;
 	public static double kI = 0.0;
 	public static double kD = 0.0;
-	public static double integralSumMax = 1 / kI;
-	public static double stabilityThreshold = 0.0;
-	public static double lowPassGain = 0.0;
+	double integralSumMax = 1 / kI;
+	double stabilityThreshold = 0.0;
+	double lowPassGain = 0.0;
 
 	public static double Q = 0.3;
 	public static double R = 3;
 	public static int N = 3;
-	DoubleSupplier heightSensor = new DoubleSupplier() {
+	DoubleSupplier heightSensor = new DoubleSupplier(){
 		@Override
-		public double getAsDouble() {
+		public double getAsDouble(){
 			return getHeight();
 		}
 	};
