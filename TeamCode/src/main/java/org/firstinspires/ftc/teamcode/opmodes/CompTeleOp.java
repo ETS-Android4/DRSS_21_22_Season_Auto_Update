@@ -167,6 +167,10 @@ public class CompTeleOp extends LinearOpMode{
 					if (controls.gantryReverseButton.isDown()) {
 						robot.states.gantryState = States.GantryState.REVERSE;
 					}
+
+					if (gamepad2.x) {
+						robot.states.gantryState = States.GantryState.DRIVER_POSITION;
+					}
 					break;
 
 				case FORWARD:
@@ -185,18 +189,21 @@ public class CompTeleOp extends LinearOpMode{
 					break;
 
 				case DOCK:
-					robot.gantry.setPositon(robot.gantry.DOCK_POSTION);
-					robot.gantry.update();
+					robot.gantry.update(robot.gantry.DOCK_POSTION);
 					break;
 
 				case DRIVER_POSITION:
 					double CalculatedPosition = robot.gantry.DRIVER_POSTION_MIN + Range.clip(
 							(robot.gantry.DRIVER_POSITON_RANGE * gamepad2ex.getRightY()),
-							robot.gantry.DRIVER_POSTION_MIN,
-							robot.gantry.DRIVER_POSTION_MAX
+							robot.gantry.DRIVER_POSITON_RANGE,
+							0
 					);
-					robot.gantry.setPositon(CalculatedPosition);
-					robot.gantry.update();
+					telemetry.addData("Gantry Calc Position", CalculatedPosition);
+					robot.gantry.update(CalculatedPosition);
+
+					if (gamepad2.y) {
+						robot.states.gantryState = States.GantryState.IDLE;
+					}
 					break;
 
 				default:

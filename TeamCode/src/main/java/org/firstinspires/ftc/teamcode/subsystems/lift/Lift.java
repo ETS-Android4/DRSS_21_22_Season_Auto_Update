@@ -38,7 +38,7 @@ public class Lift{
 	double stabilityThreshold = 0.0;
 	double lowPassGain = 0.0;
 
-	public static double Q = 0.3;
+	public static double Q = 0.2;
 	public static double R = 3;
 	public static int N = 3;
 	DoubleSupplier heightSensor = new DoubleSupplier(){
@@ -49,7 +49,7 @@ public class Lift{
 	};
 	Estimator heightFilter = new KalmanEstimator(heightSensor, Q, R, N);
 
-	public static double Z_OFFSET = 0.8;
+	public static double Z_OFFSET = 0.85;
 
 	Telemetry telemetry;
 	TelemetryPacket packet = new TelemetryPacket();

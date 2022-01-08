@@ -73,7 +73,7 @@ public class Controls{
 
 		/*Lift Controls*/
 		liftButton = new ButtonReader(
-				gamepad2ex, GamepadKeys.Button.Y
+				gamepad2ex, GamepadKeys.Button.START
 		);
 
 	}

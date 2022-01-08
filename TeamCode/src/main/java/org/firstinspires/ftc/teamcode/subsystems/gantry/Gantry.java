@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.subsystems.gantry;
 
+import com.ThermalEquilibrium.homeostasis.Controllers.Feedback.PIDEx;
+import com.ThermalEquilibrium.homeostasis.Parameters.PIDCoefficientsEx;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
@@ -7,6 +9,7 @@ import com.arcrobotics.ftclib.controller.PIDController;
 import com.arcrobotics.ftclib.controller.PIDFController;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.Range;
 
@@ -17,19 +20,23 @@ public class Gantry{
 
 	public DcMotorEx gantryMotor;
 
-	PIDController gantryPID;
-	public static double kP = 0;
+	PIDEx gantryPID;
+	public static double kP = -0.0035;
 	public static double kI = 0;
 	public static double kD = 0;
+	double integralSumMax = 1 / kI;
+	double stabilityThreshold = 0.0;
+	double lowPassGain = 0.0;
+	PIDCoefficientsEx gantryPIDCoefficients;
 
-	public static double PINION_DIAMETER = 5;
+	double PINION_DIAMETER = 3.8315;
 	double PINION_CIRCUMFERENCE = PINION_DIAMETER * 3.14159;
 	double COUNTS_PER_ROTATION = 288;
 	double COUNTS_PER_INCH = PINION_CIRCUMFERENCE * COUNTS_PER_ROTATION;
 
-	public static double DOCK_POSTION = 0;
-	public static double DRIVER_POSTION_MIN = 0;
-	public static double DRIVER_POSTION_MAX = 0;
+	public double DOCK_POSTION = -40;
+	public double DRIVER_POSTION_MIN = -110;
+	public double DRIVER_POSTION_MAX = -245;
 	public double DRIVER_POSITON_RANGE = DRIVER_POSTION_MAX - DRIVER_POSTION_MIN;
 
 
@@ -45,7 +52,8 @@ public class Gantry{
 		gantryMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 		gantryMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
-		gantryPID = new PIDController(kP, kI, kD);
+		gantryPIDCoefficients = new PIDCoefficientsEx(kP, kI, kD, integralSumMax, stabilityThreshold, lowPassGain);
+		gantryPID = new PIDEx(gantryPIDCoefficients);
 
 		telemetry.addData("Gantry", "Initialized");
 		telemetry.update();
@@ -66,20 +74,16 @@ public class Gantry{
 		return gantryMotor.getCurrentPosition();
 	}
 
-	public void setPositon(double inches) {
-		gantryPID.setSetPoint(inches * COUNTS_PER_INCH);
-	}
-
 	public void updateGantryPID() {
-		gantryPID.setP(kP);
-		gantryPID.setI(kI);
-		gantryPID.setD(kD);
+		gantryPIDCoefficients.Kp = kP;
+		gantryPIDCoefficients.Ki = kI;
+		gantryPIDCoefficients.Kd = kD;
 	}
 
-	public void update() {
+	public void update(double setPoint) {
 		updateGantryPID();
 		double output = Range.clip(
-				gantryPID.calculate(getPosition()),
+				gantryPID.calculate(setPoint, gantryMotor.getCurrentPosition()),
 				-1,
 				1
 		);

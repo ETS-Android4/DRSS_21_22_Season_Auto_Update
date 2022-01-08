@@ -57,6 +57,6 @@ public class CompRobot{
 
 	void resetEncoders() {
 		gantry.gantryMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-		gantry.gantryMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+		gantry.gantryMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
 	}
 }
