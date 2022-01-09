@@ -39,7 +39,8 @@ public class States {
         REVERSE,
         DOCK,
         DRIVER_POSITION,
-        POSITION_CONTROL
+        EXTENDING,
+        RETRACTING
     }
     public GantryState gantryState;
 
@@ -62,9 +63,11 @@ public class States {
         LEVEL_ONE,
         LEVEL_TWO,
         LEVEL_THREE,
-        CAPSTONE
+        CAPSTONE,
+        HOLD
     }
     public LiftControlState liftControlState;
+    public LiftControlState previousliftControlState;
 
     public States() {
         driveDirectionState = DriveDirectionState.FORWARD;
@@ -73,7 +76,8 @@ public class States {
         gantryState = GantryState.IDLE;
         pusherState = PusherState.RETRACTED;
         liftState = LiftState.IDLE;
-        liftControlState = LiftControlState.LEVEL_TWO;
+        liftControlState = LiftControlState.HOME;
+        previousliftControlState = LiftControlState.LEVEL_ONE;
     }
 
 }

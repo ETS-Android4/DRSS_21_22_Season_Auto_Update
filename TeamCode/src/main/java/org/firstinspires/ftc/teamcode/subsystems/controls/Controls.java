@@ -20,10 +20,12 @@ public class Controls{
 	public ButtonReader gantryForwardButton;
 	public ButtonReader gantryReverseButton;
 
-	public ButtonReader pusherExtendButton;
-	public ButtonReader pusherRetractButton;
+	public ButtonReader pusherButton;
 
+	public ButtonReader liftKillButton;
 	public ButtonReader liftButton;
+	public ButtonReader liftHeightIncreaseButton;
+	public ButtonReader liftHeightDecreaseButton;
 
 	public Controls(GamepadEx gamepad1ex, GamepadEx gamepad2ex) {
 
@@ -54,26 +56,23 @@ public class Controls{
 				gamepad2ex, GamepadKeys.Trigger.RIGHT_TRIGGER
 		);
 
-		/*Gantry Controls*/
-		gantryForwardButton = new ButtonReader(
-				gamepad2ex, GamepadKeys.Button.DPAD_UP
-		);
-
-		gantryReverseButton = new ButtonReader(
-				gamepad2ex, GamepadKeys.Button.DPAD_DOWN
-		);
-
 		/*Pusher Controls*/
-		pusherExtendButton = new ButtonReader(
+		pusherButton = new ButtonReader(
 				gamepad2ex, GamepadKeys.Button.A
-		);
-		pusherRetractButton = new ButtonReader(
-				gamepad2ex, GamepadKeys.Button.B
 		);
 
 		/*Lift Controls*/
-		liftButton = new ButtonReader(
+		liftKillButton = new ButtonReader(
 				gamepad2ex, GamepadKeys.Button.START
+		);
+		liftButton = new ButtonReader(
+				gamepad2ex, GamepadKeys.Button.B
+		);
+		liftHeightIncreaseButton = new ButtonReader(
+				gamepad2ex, GamepadKeys.Button.DPAD_UP
+		);
+		liftHeightDecreaseButton = new ButtonReader(
+				gamepad2ex, GamepadKeys.Button.DPAD_DOWN
 		);
 
 	}
@@ -91,9 +90,11 @@ public class Controls{
 		gantryForwardButton.readValue();
 		gantryReverseButton.readValue();
 
-		pusherExtendButton.readValue();
-		pusherRetractButton.readValue();
+		pusherButton.readValue();
 
+		liftKillButton.readValue();
 		liftButton.readValue();
+		liftHeightIncreaseButton.readValue();
+		liftHeightDecreaseButton.readValue();
 	}
 }
