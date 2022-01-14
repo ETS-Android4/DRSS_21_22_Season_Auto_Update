@@ -87,9 +87,6 @@ public class Controls{
 		intakeTrigger.readValue();
 		outtakeTrigger.readValue();
 
-		gantryForwardButton.readValue();
-		gantryReverseButton.readValue();
-
 		pusherButton.readValue();
 
 		liftKillButton.readValue();

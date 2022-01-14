@@ -75,7 +75,7 @@ public class States {
         intakeState = IntakeState.IDLE;
         gantryState = GantryState.IDLE;
         pusherState = PusherState.RETRACTED;
-        liftState = LiftState.IDLE;
+        liftState = LiftState.POSITION_CONTROL;
         liftControlState = LiftControlState.HOME;
         previousliftControlState = LiftControlState.LEVEL_ONE;
     }

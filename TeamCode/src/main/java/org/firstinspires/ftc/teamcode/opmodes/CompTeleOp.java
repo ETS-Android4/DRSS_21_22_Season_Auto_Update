@@ -132,11 +132,10 @@ public class CompTeleOp extends LinearOpMode{
 					if (!controls.intakeTrigger.isDown()) {
 						robot.states.intakeState = States.IntakeState.IDLE;
 					}
-					/* TODO: Tune the color sensor to reliably tell when there is something loaded in the box
 					if (robot.intake.isLoaded()) {
 						intakeTimer.reset();
 						robot.states.intakeState = States.IntakeState.UNLOAD;
-					}*/
+					}
 					break;
 
 				case OUTTAKE:
@@ -147,9 +146,14 @@ public class CompTeleOp extends LinearOpMode{
 					break;
 
 				case UNLOAD:
-					robot.intake.runIntake(-1.0);
-					if (intakeTimer.seconds() > 2) {
-						robot.states.intakeState = States.IntakeState.IDLE;
+					if (intakeTimer.seconds() < 1) {
+						robot.intake.runIntake(-1.0);
+					}
+					if (intakeTimer.seconds() > .5) {
+						robot.intake.runIntake(0.0);
+						if (intakeTimer.seconds() > 2.5) {
+							robot.states.intakeState = States.IntakeState.IDLE;
+						}
 					}
 					break;
 
@@ -178,11 +182,12 @@ public class CompTeleOp extends LinearOpMode{
 					break;
 
 				case EXTENDING:
-					while (robot.gantry.getPosition() > robot.gantry.DRIVER_POSTION_MIN) {
-						robot.gantry.update(robot.gantry.DRIVER_POSTION_MIN);
+					robot.gantry.update(robot.gantry.DRIVER_POSTION_MIN);
+
+					if (robot.gantry.getPosition() <= robot.gantry.DRIVER_POSTION_MIN) {
+						robot.states.liftControlState = robot.states.previousliftControlState;
+						robot.states.gantryState = States.GantryState.DRIVER_POSITION;
 					}
-					robot.states.liftControlState = robot.states.previousliftControlState;
-					robot.states.gantryState = States.GantryState.DRIVER_POSITION;
 					break;
 
 				case RETRACTING:
@@ -221,7 +226,7 @@ public class CompTeleOp extends LinearOpMode{
 			/*Lift Height State Machine*/
 			switch (robot.states.liftControlState) {
 				case HOME:
-					robot.lift.setHeight(10);
+					robot.lift.setHeight(5);
 
 					if (controls.liftButton.wasJustPressed()) {
 						robot.states.gantryState = States.GantryState.EXTENDING;
@@ -391,10 +396,12 @@ public class CompTeleOp extends LinearOpMode{
 
 			/*Telemetry*/
 			telemetry.addLine("Lift")
-					.addData("Level", robot.states.previousliftControlState);
+					.addData("Level", robot.states.previousliftControlState)
+					.addData("State", robot.states.liftState);
 
 			telemetry.addLine("Gantry")
-					.addData("Position", robot.gantry.getPosition());
+					.addData("Position", robot.gantry.getPosition())
+					.addData("State", robot.states.gantryState);
 
 			/*telemetry.addLine("Intake")
 					.addData("Red", robot.intake.freightSensor.red())
@@ -424,7 +431,7 @@ public class CompTeleOp extends LinearOpMode{
 			packet.put("Blue", robot.intake.freightSensor.blue());
 			packet.put("Freight Loaded", robot.intake.isLoaded());
 
-			packet.put("Position", "Telemetry");
+			packet.put("Robot Position", "Telemetry");
 			packet.put("x", poseEstimate.getX());
 			packet.put("y", poseEstimate.getY());
 			packet.put("heading (deg)", Math.toDegrees(poseEstimate.getHeading()));

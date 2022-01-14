@@ -18,7 +18,7 @@ public class Intake{
 
 	public ColorSensor freightSensor;
 
-	public static double COLOR_THRESHOLD = .5;
+	public static double COLOR_THRESHOLD = 30;
 
 	Telemetry telemetry;
 	TelemetryPacket packet = new TelemetryPacket();
@@ -48,7 +48,7 @@ public class Intake{
 	}
 
 	public boolean isLoaded() {
-		if (freightSensor.red() > COLOR_THRESHOLD) {
+		if (freightSensor.green() > COLOR_THRESHOLD) {
 			return true;
 		}
 		else {

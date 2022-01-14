@@ -22,7 +22,7 @@ public class Gantry{
 
 	PIDEx gantryPID;
 	public static double kP = -0.0035;
-	public static double kI = 0;
+	public static double kI = -0.000;
 	public static double kD = 0;
 	double integralSumMax = 1 / kI;
 	double stabilityThreshold = 0.0;
@@ -78,6 +78,7 @@ public class Gantry{
 		gantryPIDCoefficients.Kp = kP;
 		gantryPIDCoefficients.Ki = kI;
 		gantryPIDCoefficients.Kd = kD;
+		gantryPIDCoefficients.maximumIntegralSum = 1 / kI;
 	}
 
 	public void update(double setPoint) {
