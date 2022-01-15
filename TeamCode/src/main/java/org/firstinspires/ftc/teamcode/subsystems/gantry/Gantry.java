@@ -21,8 +21,8 @@ public class Gantry{
 	public DcMotorEx gantryMotor;
 
 	PIDEx gantryPID;
-	public static double kP = -0.0035;
-	public static double kI = -0.000;
+	public static double kP = -0.02;
+	public static double kI = 0;
 	public static double kD = 0;
 	double integralSumMax = 1 / kI;
 	double stabilityThreshold = 0.0;
@@ -34,7 +34,7 @@ public class Gantry{
 	double COUNTS_PER_ROTATION = 288;
 	double COUNTS_PER_INCH = PINION_CIRCUMFERENCE * COUNTS_PER_ROTATION;
 
-	public double DOCK_POSTION = -40;
+	public double DOCK_POSTION = 40;
 	public double DRIVER_POSTION_MIN = -110;
 	public double DRIVER_POSTION_MAX = -245;
 	public double DRIVER_POSITON_RANGE = DRIVER_POSTION_MAX - DRIVER_POSTION_MIN;

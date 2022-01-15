@@ -111,6 +111,12 @@ public class Lift{
 				1.0
 		);
 
-		liftMotor.setPower(output);
+		if (output >= -0.1) {
+			liftMotor.setPower(output);
+		}
+
+		if (output < -0.1) {
+			liftMotor.setPower(output * 0.1);
+		}
 	}
 }

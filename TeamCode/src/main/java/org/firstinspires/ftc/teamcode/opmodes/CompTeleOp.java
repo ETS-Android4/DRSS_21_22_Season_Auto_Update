@@ -226,7 +226,7 @@ public class CompTeleOp extends LinearOpMode{
 			/*Lift Height State Machine*/
 			switch (robot.states.liftControlState) {
 				case HOME:
-					robot.lift.setHeight(5);
+					robot.lift.setHeight(0);
 
 					if (controls.liftButton.wasJustPressed()) {
 						robot.states.gantryState = States.GantryState.EXTENDING;
