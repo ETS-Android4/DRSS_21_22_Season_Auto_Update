@@ -73,7 +73,7 @@ public class States {
         driveDirectionState = DriveDirectionState.FORWARD;
         speedState = SpeedState.FULL_SPEED;
         intakeState = IntakeState.IDLE;
-        gantryState = GantryState.IDLE;
+        gantryState = GantryState.DOCK;
         pusherState = PusherState.RETRACTED;
         liftState = LiftState.POSITION_CONTROL;
         liftControlState = LiftControlState.HOME;
