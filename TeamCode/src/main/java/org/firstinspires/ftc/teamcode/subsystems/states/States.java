@@ -35,8 +35,7 @@ public class States {
 
     public enum GantryState {
         IDLE,
-        FORWARD,
-        REVERSE,
+        RESET_ENCODER,
         DOCK,
         DRIVER_POSITION,
         EXTENDING,

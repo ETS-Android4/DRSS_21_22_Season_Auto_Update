@@ -20,14 +20,10 @@ public class Gantry{
 
 	public DcMotorEx gantryMotor;
 
-	PIDEx gantryPID;
-	public static double kP = -0.02;
+	public PIDController gantryPID;
+	public static double kP = -0.015;
 	public static double kI = 0;
 	public static double kD = 0;
-	double integralSumMax = 1 / kI;
-	double stabilityThreshold = 0.0;
-	double lowPassGain = 0.0;
-	PIDCoefficientsEx gantryPIDCoefficients;
 
 	double PINION_DIAMETER = 3.8315;
 	double PINION_CIRCUMFERENCE = PINION_DIAMETER * 3.14159;
@@ -38,6 +34,8 @@ public class Gantry{
 	public double DRIVER_POSTION_MIN = -110;
 	public double DRIVER_POSTION_MAX = -245;
 	public double DRIVER_POSITON_RANGE = DRIVER_POSTION_MAX - DRIVER_POSTION_MIN;
+
+	public double lastResetPosition = 0;
 
 
 	Telemetry telemetry;
@@ -52,8 +50,7 @@ public class Gantry{
 		gantryMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 		gantryMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
-		gantryPIDCoefficients = new PIDCoefficientsEx(kP, kI, kD, integralSumMax, stabilityThreshold, lowPassGain);
-		gantryPID = new PIDEx(gantryPIDCoefficients);
+		gantryPID = new PIDController(kP, kI, kD);
 
 		telemetry.addData("Gantry", "Initialized");
 		telemetry.update();
@@ -75,14 +72,14 @@ public class Gantry{
 	}
 
 	public void updateGantryPID() {
-		gantryPIDCoefficients.Kp = kP;
-		gantryPIDCoefficients.Ki = kI;
-		gantryPIDCoefficients.Kd = kD;
-		gantryPIDCoefficients.maximumIntegralSum = 1 / kI;
+		gantryPID.setPID(kP, kI, kD);
 	}
 
 	public void update(double setPoint) {
 		updateGantryPID();
+
+		double offsetSetPoint = setPoint - lastResetPosition;
+
 		double output = Range.clip(
 				gantryPID.calculate(setPoint, gantryMotor.getCurrentPosition()),
 				-1,
@@ -90,5 +87,9 @@ public class Gantry{
 		);
 
 		gantryMotor.setPower(output);
+	}
+
+	public void reset() {
+		lastResetPosition = gantryMotor.getCurrentPosition() - DOCK_POSTION;
 	}
 }
