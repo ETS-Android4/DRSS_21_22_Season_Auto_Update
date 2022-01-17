@@ -187,7 +187,7 @@ public class CompTeleOp extends LinearOpMode{
 				case EXTENDING:
 					robot.gantry.update(robot.gantry.DRIVER_POSTION_MIN);
 
-					if (robot.gantry.getPosition() <= robot.gantry.DRIVER_POSTION_MIN) {
+					if (robot.gantry.gantryPID.atSetPoint()) {
 						robot.states.liftControlState = robot.states.previousliftControlState;
 						robot.states.gantryState = States.GantryState.DRIVER_POSITION;
 					}
