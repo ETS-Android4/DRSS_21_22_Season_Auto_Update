@@ -31,12 +31,6 @@ public class Intake{
 		intakeMotor.setDirection(DcMotorEx.Direction.FORWARD);
 
 		freightSensor = map.get(ColorSensor.class, "freightSensor");
-
-		telemetry.addData("Intake", "Initialized");
-		telemetry.update();
-
-		packet.put("Intake", "Initialized");
-		dashboard.sendTelemetryPacket(packet);
 	}
 
 	public void runIntake(double speed) {

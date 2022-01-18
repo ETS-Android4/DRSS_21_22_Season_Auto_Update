@@ -51,12 +51,6 @@ public class Gantry{
 		gantryMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
 		gantryPID = new PIDController(kP, kI, kD);
-
-		telemetry.addData("Gantry", "Initialized");
-		telemetry.update();
-
-		packet.put("Gantry", "Initialized");
-		dashboard.sendTelemetryPacket(packet);
 	}
 
 	public void setGantryPower(double power) {

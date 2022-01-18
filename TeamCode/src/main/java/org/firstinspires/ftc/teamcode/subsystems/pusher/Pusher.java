@@ -28,12 +28,6 @@ public class Pusher{
 			AngleUnit.DEGREES);
 
 		pusherSetPosition(0);
-
-		telemetry.addData("Pusher", "Initialized");
-		telemetry.update();
-
-		packet.put("Pusher", "Initialized");
-		dashboard.sendTelemetryPacket(packet);
 	}
 
 	public void pusherSetPosition(float angle) {

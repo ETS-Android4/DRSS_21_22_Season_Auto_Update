@@ -22,12 +22,6 @@ public class Spinner {
         spinnerMotor = map.get(DcMotorEx.class, "spinnerMotor");
         spinnerMotor.setDirection(DcMotorEx.Direction.FORWARD);
         spinnerMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        telemetry.addData("Spinner", "Initialized");
-        telemetry.update();
-
-        packet.put("Spinner", "Initialized");
-        dashboard.sendTelemetryPacket(packet);
     }
 
     public void runSpinner(double speed) {

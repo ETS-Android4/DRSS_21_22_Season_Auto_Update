@@ -66,12 +66,6 @@ public class Lift{
 
 		liftPIDCoefficients = new PIDCoefficientsEx(kP, kI, kD, integralSumMax, stabilityThreshold, lowPassGain);
 		liftPID = new PIDEx(liftPIDCoefficients);
-
-		telemetry.addData("Lift", "Initialized");
-		telemetry.update();
-
-		packet.put("Lift", "Initialized");
-		dashboard.sendTelemetryPacket(packet);
 	}
 
 	public void setLiftPower(double power) {
