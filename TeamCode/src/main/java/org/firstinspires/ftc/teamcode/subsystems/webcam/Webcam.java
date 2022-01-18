@@ -18,6 +18,10 @@ public class Webcam {
     private static final String VUFORIA_KEY = "AUz/xEr/////AAABmZjEf3Mc1kGYkOsXVF3u1Gl8gO6qZozGZxty6mcO/xE35elxxgMBwh4/zzwC9Dh4EPKvDexbQAVpjQJzz+Cx+PMYbKiPfvJNsyHDoJkWCPC1skmjKJq/4ctLkD1zGtWPhVUsdGK9ib6ze346j5nHgoFwzoi4SAITZUfQZEj2ccyiWs3zvY2DzbL/QgXrk391epqrpmB6y96vnvCsTUYA6i1y8pg7TZmjUBNWC/3PMr0EHBAFzu+cgtMWVD2sjR9XYcyh9eCRKFNq1aZwikL2P2F4Px5eyujkCVBsnQ0N+dNBo/UCREIF2az5iJY/x+qnrr8aZ2Rj1Gri12gHuKLT7BWS73HKsC9XVURurHz9RmJs";
     public VuforiaLocalizer vuforia;
 
+    public BarcodeItem barcodeItem1;
+    public BarcodeItem barcodeItem2;
+    public BarcodeItem barcodeItem3;
+
     public Webcam(HardwareMap map, Telemetry telemetry) {
 
         this.map = map;
@@ -46,6 +50,12 @@ public class Webcam {
 
         // Start streaming to FTC Dashboard
         FtcDashboard.getInstance().startCameraStream(vuforia, 0);
+    }
+
+    public void getItems() {
+        barcodeItem1.objectType = "test";
+        barcodeItem1.horizontalPosition = 10;
+        barcodeItem1.verticalPosition = 10;
     }
 
 }
