@@ -88,6 +88,8 @@ public class CompTeleOp extends LinearOpMode{
 							)
 					);
 
+					robot.drive.setLed(false, true);
+
 					if (controls.driveFlipButton.wasJustPressed()) {
 						robot.states.driveDirectionState = States.DriveDirectionState.REVERSE;
 					}
@@ -102,8 +104,9 @@ public class CompTeleOp extends LinearOpMode{
 							)
 					);
 
+					robot.drive.setLed(true, false);
+
 					if (controls.driveFlipButton.wasJustPressed()) {
-						robot.states.liftControlState = robot.states.previousliftControlState;
 						robot.states.driveDirectionState = States.DriveDirectionState.FORWARD;
 					}
 					break;
@@ -170,9 +173,9 @@ public class CompTeleOp extends LinearOpMode{
 
 				case DOCK:
 					robot.gantry.update(robot.gantry.DOCK_POSTION);
-					if (robot.gantry.gantryPID.atSetPoint()) {
+					/*if (robot.gantry.atSetPoint) {
 						robot.gantry.reset();
-					}
+					}*/
 					break;
 
 				case DRIVER_POSITION:
@@ -187,7 +190,7 @@ public class CompTeleOp extends LinearOpMode{
 				case EXTENDING:
 					robot.gantry.update(robot.gantry.DRIVER_POSTION_MIN);
 
-					if (robot.gantry.gantryPID.atSetPoint()) {
+					if (robot.gantry.getPosition() <= robot.gantry.DRIVER_POSTION_MIN) {
 						robot.states.liftControlState = robot.states.previousliftControlState;
 						robot.states.gantryState = States.GantryState.DRIVER_POSITION;
 					}

@@ -20,10 +20,16 @@ public class Gantry{
 
 	public DcMotorEx gantryMotor;
 
-	public PIDController gantryPID;
-	public static double kP = -0.015;
+	public PIDEx gantryPID;
+	PIDCoefficientsEx gantryPIDCoefficients;
+	public static double kP = -0.025;
 	public static double kI = 0;
 	public static double kD = 0;
+	double intSumMax = 0;
+	double stabilityThreshold = 0;
+	double lowPassGain = 0;
+
+	public boolean atSetPoint = false;
 
 	double PINION_DIAMETER = 3.8315;
 	double PINION_CIRCUMFERENCE = PINION_DIAMETER * 3.14159;
@@ -50,7 +56,8 @@ public class Gantry{
 		gantryMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 		gantryMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
-		gantryPID = new PIDController(kP, kI, kD);
+		gantryPIDCoefficients = new PIDCoefficientsEx(kP, kI, kD, intSumMax, stabilityThreshold, lowPassGain);
+		gantryPID = new PIDEx(gantryPIDCoefficients);
 	}
 
 	public void setGantryPower(double power) {
@@ -66,7 +73,9 @@ public class Gantry{
 	}
 
 	public void updateGantryPID() {
-		gantryPID.setPID(kP, kI, kD);
+		gantryPIDCoefficients.Kp = kP;
+		gantryPIDCoefficients.Ki = kI;
+		gantryPIDCoefficients.Kd = kD;
 	}
 
 	public void update(double setPoint) {
@@ -81,6 +90,13 @@ public class Gantry{
 		);
 
 		gantryMotor.setPower(output);
+
+		if ((gantryMotor.getCurrentPosition() <= (offsetSetPoint + 1.0)) && (gantryMotor.getCurrentPosition() >= (offsetSetPoint - 1.0))) {
+			atSetPoint = true;
+		}
+		else {
+			atSetPoint = false;
+		}
 	}
 
 	public void reset() {

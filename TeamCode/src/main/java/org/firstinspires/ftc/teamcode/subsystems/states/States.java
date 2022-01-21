@@ -76,7 +76,7 @@ public class States {
         pusherState = PusherState.RETRACTED;
         liftState = LiftState.POSITION_CONTROL;
         liftControlState = LiftControlState.HOME;
-        previousliftControlState = LiftControlState.LEVEL_ONE;
+        previousliftControlState = LiftControlState.LEVEL_THREE;
     }
 
 }
