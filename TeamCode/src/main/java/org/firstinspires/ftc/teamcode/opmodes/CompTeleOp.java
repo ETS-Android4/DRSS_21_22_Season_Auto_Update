@@ -83,12 +83,12 @@ public class CompTeleOp extends LinearOpMode{
 					robot.drive.setWeightedDrivePower(
 							new Pose2d(
 									-gamepad1.left_stick_y * speedOverride,
-									-gamepad1.left_stick_x * speedOverride,
+									gamepad1.left_stick_x * speedOverride,
 									-gamepad1.right_stick_x * speedOverride
 							)
 					);
 
-					robot.drive.setLed(false, true);
+					robot.drive.setLed(true, false);
 
 					if (controls.driveFlipButton.wasJustPressed()) {
 						robot.states.driveDirectionState = States.DriveDirectionState.REVERSE;
@@ -104,7 +104,7 @@ public class CompTeleOp extends LinearOpMode{
 							)
 					);
 
-					robot.drive.setLed(true, false);
+					robot.drive.setLed(false, true);
 
 					if (controls.driveFlipButton.wasJustPressed()) {
 						robot.states.driveDirectionState = States.DriveDirectionState.FORWARD;
