@@ -39,7 +39,8 @@ public class States {
         DOCK,
         DRIVER_POSITION,
         EXTENDING,
-        RETRACTING
+        RETRACTING,
+        REHOMING
     }
     public GantryState gantryState;
 

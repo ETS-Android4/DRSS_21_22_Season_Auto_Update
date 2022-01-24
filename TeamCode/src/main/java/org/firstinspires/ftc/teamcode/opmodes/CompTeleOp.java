@@ -173,9 +173,9 @@ public class CompTeleOp extends LinearOpMode{
 
 				case DOCK:
 					robot.gantry.update(robot.gantry.DOCK_POSTION);
-					/*if (robot.gantry.atSetPoint) {
-						robot.gantry.reset();
-					}*/
+					if (gamepad2ex.getRightY() < -0.1) {
+						robot.states.gantryState = States.GantryState.REHOMING;
+					}
 					break;
 
 				case DRIVER_POSITION:
@@ -199,6 +199,16 @@ public class CompTeleOp extends LinearOpMode{
 				case RETRACTING:
 					robot.states.liftControlState = States.LiftControlState.HOME;
 					if (robot.lift.getHeight() < 1.0) {
+						robot.states.gantryState = States.GantryState.DOCK;
+					}
+					break;
+
+				case REHOMING:
+					if (gamepad2ex.getRightY() < -0.1) {
+						robot.gantry.setGantryPower(gamepad2ex.getRightY());
+					}
+					else {
+						robot.gantry.reset();
 						robot.states.gantryState = States.GantryState.DOCK;
 					}
 					break;
