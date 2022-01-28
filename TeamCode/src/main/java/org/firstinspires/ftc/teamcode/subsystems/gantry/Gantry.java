@@ -84,7 +84,7 @@ public class Gantry{
 		double offsetSetPoint = setPoint - lastResetPosition;
 
 		double output = Range.clip(
-				gantryPID.calculate(setPoint, gantryMotor.getCurrentPosition()),
+				gantryPID.calculate(offsetSetPoint, gantryMotor.getCurrentPosition()),
 				-1,
 				1
 		);

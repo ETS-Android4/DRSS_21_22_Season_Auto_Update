@@ -172,15 +172,17 @@ public class CompTeleOp extends LinearOpMode{
 					break;
 
 				case DOCK:
+					robot.gantry.kP = -0.025;
 					robot.gantry.update(robot.gantry.DOCK_POSTION);
-					if (gamepad2ex.getRightY() < -0.1) {
+					if (gamepad2ex.getLeftY() <= -0.1) {
 						robot.states.gantryState = States.GantryState.REHOMING;
 					}
 					break;
 
 				case DRIVER_POSITION:
+					robot.gantry.kP = -0.0075;
 					double CalculatedPosition = robot.gantry.DRIVER_POSTION_MIN + Range.clip(
-							(robot.gantry.DRIVER_POSITON_RANGE * gamepad2ex.getRightY()),
+							(robot.gantry.DRIVER_POSITON_RANGE * gamepad2ex.getLeftY()),
 							robot.gantry.DRIVER_POSITON_RANGE,
 							0
 					);
@@ -188,6 +190,7 @@ public class CompTeleOp extends LinearOpMode{
 					break;
 
 				case EXTENDING:
+					robot.gantry.kP = -0.025;
 					robot.gantry.update(robot.gantry.DRIVER_POSTION_MIN);
 
 					if (robot.gantry.getPosition() <= robot.gantry.DRIVER_POSTION_MIN) {
@@ -197,6 +200,7 @@ public class CompTeleOp extends LinearOpMode{
 					break;
 
 				case RETRACTING:
+					robot.gantry.kP = -0.025;
 					robot.states.liftControlState = States.LiftControlState.HOME;
 					if (robot.lift.getHeight() < 1.0) {
 						robot.states.gantryState = States.GantryState.DOCK;
@@ -204,7 +208,7 @@ public class CompTeleOp extends LinearOpMode{
 					break;
 
 				case REHOMING:
-					if (gamepad2ex.getRightY() < -0.1) {
+					if (gamepad2ex.getLeftY() <= -0.1) {
 						robot.gantry.setGantryPower(gamepad2ex.getRightY());
 					}
 					else {
@@ -358,10 +362,10 @@ public class CompTeleOp extends LinearOpMode{
 				case IDLE:
 					robot.lift.stop();
 
-					if (gamepad2ex.getLeftY() >= 0.1) {
+					if (gamepad2ex.getRightY() >= 0.1) {
 						robot.states.liftState = States.LiftState.EXTEND;
 					}
-					else if (gamepad2ex.getLeftY() <= -0.1) {
+					else if (gamepad2ex.getRightY() <= -0.1) {
 						robot.states.liftState = States.LiftState.RETRACT;
 					}
 					if (controls.liftKillButton.wasJustPressed()) {
@@ -371,9 +375,9 @@ public class CompTeleOp extends LinearOpMode{
 					break;
 
 				case EXTEND:
-					robot.lift.setLiftPower(gamepad2ex.getLeftY());
+					robot.lift.setLiftPower(gamepad2ex.getRightY());
 
-					if (gamepad2ex.getLeftY() <= 0.1) {
+					if (gamepad2ex.getRightY() <= 0.1) {
 						robot.states.liftControlState = States.LiftControlState.HOLD;
 						robot.lift.setHeight(robot.lift.getHeight());
 						robot.states.liftState = States.LiftState.POSITION_CONTROL;
@@ -381,9 +385,9 @@ public class CompTeleOp extends LinearOpMode{
 					break;
 
 				case RETRACT:
-					robot.lift.setLiftPower(gamepad2ex.getLeftY());
+					robot.lift.setLiftPower(gamepad2ex.getRightY());
 
-					if (gamepad2ex.getLeftY() >= -0.1) {
+					if (gamepad2ex.getRightY() >= -0.1) {
 						robot.states.liftControlState = States.LiftControlState.HOLD;
 						robot.lift.setHeight(robot.lift.getHeight());
 						robot.states.liftState = States.LiftState.POSITION_CONTROL;
@@ -397,10 +401,10 @@ public class CompTeleOp extends LinearOpMode{
 						robot.states.liftControlState = States.LiftControlState.HOME;
 						robot.states.liftState = States.LiftState.IDLE;
 					}
-					if (gamepad2ex.getLeftY() >= 0.1) {
+					if (gamepad2ex.getRightY() >= 0.1) {
 						robot.states.liftState = States.LiftState.EXTEND;
 					}
-					else if (gamepad2ex.getLeftY() <= -0.1) {
+					else if (gamepad2ex.getRightY() <= -0.1) {
 						robot.states.liftState = States.LiftState.RETRACT;
 					}
 					break;

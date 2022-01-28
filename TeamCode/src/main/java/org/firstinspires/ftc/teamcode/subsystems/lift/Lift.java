@@ -31,7 +31,7 @@ public class Lift{
 
 	PIDEx liftPID;
 	PIDCoefficientsEx liftPIDCoefficients;
-	public static double kP = 0.3;
+	public static double kP = 0.5;
 	public static double kI = 0.0;
 	public static double kD = 0.0;
 	double integralSumMax = 1 / kI;
