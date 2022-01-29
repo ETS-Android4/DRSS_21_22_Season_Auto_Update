@@ -25,7 +25,6 @@ public class CompRobot{
 	public Gantry gantry;
 	public Pusher pusher;
 	public Spinner spinner;
-	public Webcam webcam;
 
 	public States states;
 
@@ -42,7 +41,6 @@ public class CompRobot{
 		gantry = new Gantry(map, telemetry);
 		pusher = new Pusher(map, telemetry);
 		spinner = new Spinner(map, telemetry);
-		webcam = new Webcam(map, telemetry);
 
 		if (resetEncoders) {
 			resetEncoders();

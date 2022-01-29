@@ -1,10 +1,12 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.subsystems.webcam.Webcam;
 
+@TeleOp(name = "Webcam Test", group = "test")
 public class WebcamTest extends LinearOpMode{
 
 	Webcam webcam;
@@ -15,13 +17,9 @@ public class WebcamTest extends LinearOpMode{
 
 		waitForStart();
 		while (opModeIsActive()) {
-			webcam.getWebcamData();
-			webcam.updateTFODetections();
+			//webcam.getWebcamData();
 
-			for (String label : webcam.barcodeItemLabels) {
-				telemetry.addData("Item:", label);
-			}
-			telemetry.addData("Position: ", webcam.getDuckPosition());
+			telemetry.addData("Position: ", webcam.locateDuck());
 			telemetry.update();
 		}
 	}

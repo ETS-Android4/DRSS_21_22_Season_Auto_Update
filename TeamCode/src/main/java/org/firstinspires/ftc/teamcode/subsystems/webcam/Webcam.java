@@ -33,9 +33,10 @@ public class Webcam {
     public VuforiaLocalizer vuforia;
     private TFObjectDetector tfod;
 
+    public double duckXPosition = 0;
+    double[] positions = new double[3];
+
     List<Recognition> updatedRecognitions;
-    List<BarcodeItem> barcodeItemList;
-    public ArrayList<String> barcodeItemLabels;
 
     public Webcam(HardwareMap map, Telemetry telemetry) {
 
@@ -44,6 +45,10 @@ public class Webcam {
 
         telemetry.addData("Initializing", "Vuforia");
         telemetry.update();
+
+        positions[0] = 8.0;
+        positions[1] = 242.0;
+        positions[2] = 498.0;
 
         initVuforia();
         initTfod();
@@ -116,45 +121,39 @@ public class Webcam {
                             recognition.getRight(), recognition.getBottom());
                     i++;
                 }
-                telemetry.update();
             }
         }
     }
 
-    void getBarcodeItemList() {
-        updatedRecognitions.clear();
-        barcodeItemList.clear();
+    void getDuckPosition() {
         updatedRecognitions = tfod.getUpdatedRecognitions();
-        BarcodeItem item = new BarcodeItem();
 
         if (updatedRecognitions != null) {
             for (Recognition tfodItem : updatedRecognitions) {
-                item.objectType = tfodItem.getLabel();
-                item.horizontalPosition = tfodItem.getLeft();
-
-                barcodeItemList.add(item);
+                if (tfodItem.getLabel() == "Duck") {
+                    duckXPosition = tfodItem.getLeft();
+                }
             }
         }
-
-        barcodeItemList.sort(Comparator.comparing(BarcodeItem::getHorizontalPosition));
     }
 
-    void getBarcodeItemLabels() {
-        barcodeItemLabels.clear();
-        for (BarcodeItem item : barcodeItemList) {
-            barcodeItemLabels.add(item.objectType);
+    int getClosestPosition() {
+        double distance = Math.abs(positions[0] - duckXPosition);
+        int closestPosition = 0;
+
+        for (int i = 1; i < positions.length; i++) {
+            double iDistance = Math.abs(positions[i] - duckXPosition);
+            if(iDistance < distance){
+                closestPosition = i;
+                distance = iDistance;
+            }
         }
+        closestPosition++;
+        return closestPosition;
     }
 
-    public void updateTFODetections() {
-        getBarcodeItemList();
-        getBarcodeItemLabels();
-    }
-
-    public int getDuckPosition() {
-        getBarcodeItemList();
-        getBarcodeItemLabels();
-        int position = barcodeItemLabels.indexOf("Duck");
-        return position;
+    public int locateDuck() {
+        getDuckPosition();
+        return getClosestPosition();
     }
 }
