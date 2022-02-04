@@ -259,7 +259,7 @@ public class CompTeleOp extends LinearOpMode{
 
 				case REHOMING:
 					if (gamepad2ex.getLeftY() <= -0.1) {
-						robot.gantry.setGantryPower(gamepad2ex.getRightY());
+						robot.gantry.setGantryPower(gamepad2ex.getLeftY());
 					}
 					else {
 						robot.gantry.gantryMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -475,7 +475,14 @@ public class CompTeleOp extends LinearOpMode{
 					break;
 
 				case POSITION_CONTROL:
-					robot.capstone.capSetPosition(gamepad2ex.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER));
+					/*double capPosition = gamepad2.right_trigger;
+					robot.capstone.capSetPosition(capPosition);*/
+					if (controls.capstoneTrigger.isDown()) {
+						robot.capstone.capServo.setPosition(1.0);
+					}
+					else {
+						robot.capstone.capServo.setPosition(0.0);
+					}
 					break;
 
 				default:

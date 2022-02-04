@@ -22,7 +22,7 @@ public class Gantry{
 
 	public PIDEx gantryPID;
 	PIDCoefficientsEx gantryPIDCoefficients;
-	public double kP = -0.025;
+	public double kP = -0.04;
 	public double kI = 0;
 	public double kD = 0;
 	double intSumMax = 0;
@@ -59,10 +59,17 @@ public class Gantry{
 		gantryPID = new PIDEx(gantryPIDCoefficients);
 
 		if (home) {
-			while (gantryMotor.getCurrentPosition() < HOME_POSITION) {
+			while (gantryMotor.getCurrentPosition() < (HOME_POSITION-1)) {
 				update(HOME_POSITION);
+
+				telemetry.addData("position", gantryMotor.getCurrentPosition());
+				telemetry.update();
 			}
+			telemetry.addData("Resetting", gantryMotor.getCurrentPosition());
+			telemetry.update();
 			reset();
+			telemetry.addData("Reset", gantryMotor.getCurrentPosition());
+			telemetry.update();
 		}
 	}
 

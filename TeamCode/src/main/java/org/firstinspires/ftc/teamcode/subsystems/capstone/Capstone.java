@@ -5,6 +5,7 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.arcrobotics.ftclib.hardware.ServoEx;
 import com.arcrobotics.ftclib.hardware.SimpleServo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -14,7 +15,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
  */
 public class Capstone {
 
-    ServoEx capServo;
+    public Servo capServo;
 
     int DEFAULT_MIN_ANGLE = 0;
     int DEFAULT_MAX_ANGLE = 180;
@@ -26,26 +27,12 @@ public class Capstone {
     public Capstone(HardwareMap map, Telemetry telemetry) {
         this.telemetry = telemetry;
 
-        capServo = new SimpleServo(map, "capServo",
-                DEFAULT_MIN_ANGLE, DEFAULT_MAX_ANGLE,
-                AngleUnit.DEGREES);
+        capServo = map.get(Servo.class, "capServo");
 
         capSetPosition(0);
     }
 
-    public void capSetPosition(float angle) {
-        capServo.turnToAngle(angle);
-    }
-
     public void capSetPosition(double position) {
         capServo.setPosition(position);
-    }
-
-    public void capMove(float angle) {
-        capServo.rotateByAngle(angle);
-    }
-
-    public void capMove(double distance) {
-        capServo.rotateBy(distance);
     }
 }
