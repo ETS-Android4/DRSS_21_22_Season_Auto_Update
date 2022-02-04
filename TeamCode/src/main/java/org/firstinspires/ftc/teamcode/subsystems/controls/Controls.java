@@ -15,7 +15,7 @@ public class Controls{
 	public ButtonReader driveFlipButton;
 
 	public TriggerReader intakeTrigger;
-	public TriggerReader outtakeTrigger;
+	public ButtonReader outtakeButton;
 
 	public ButtonReader gantryForwardButton;
 	public ButtonReader gantryReverseButton;
@@ -26,6 +26,8 @@ public class Controls{
 	public ButtonReader liftButton;
 	public ButtonReader liftHeightIncreaseButton;
 	public ButtonReader liftHeightDecreaseButton;
+
+	public TriggerReader capstoneTrigger;
 
 	public Controls(GamepadEx gamepad1ex, GamepadEx gamepad2ex) {
 
@@ -52,8 +54,8 @@ public class Controls{
 				gamepad2ex, GamepadKeys.Trigger.LEFT_TRIGGER
 		);
 
-		outtakeTrigger = new TriggerReader(
-				gamepad2ex, GamepadKeys.Trigger.RIGHT_TRIGGER
+		outtakeButton = new ButtonReader(
+				gamepad2ex, GamepadKeys.Button.LEFT_BUMPER
 		);
 
 		/*Pusher Controls*/
@@ -75,6 +77,11 @@ public class Controls{
 				gamepad2ex, GamepadKeys.Button.DPAD_DOWN
 		);
 
+		/*Capstone Controls*/
+		capstoneTrigger = new TriggerReader(
+				gamepad2ex, GamepadKeys.Trigger.RIGHT_TRIGGER
+		);
+
 	}
 
 	public void readValues() {
@@ -85,7 +92,7 @@ public class Controls{
 		driveFlipButton.readValue();
 
 		intakeTrigger.readValue();
-		outtakeTrigger.readValue();
+		outtakeButton.readValue();
 
 		pusherButton.readValue();
 
@@ -93,5 +100,7 @@ public class Controls{
 		liftButton.readValue();
 		liftHeightIncreaseButton.readValue();
 		liftHeightDecreaseButton.readValue();
+
+		capstoneTrigger.readValue();
 	}
 }

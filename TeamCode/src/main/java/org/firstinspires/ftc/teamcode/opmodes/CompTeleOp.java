@@ -30,6 +30,7 @@ public class CompTeleOp extends LinearOpMode{
 	double speedOverride = 1.0;
 
 	ElapsedTime intakeTimer = new ElapsedTime();
+	ElapsedTime blinkTimer = new ElapsedTime();
 
 	TelemetryPacket packet = new TelemetryPacket();
 	FtcDashboard dashboard = FtcDashboard.getInstance();
@@ -88,9 +89,8 @@ public class CompTeleOp extends LinearOpMode{
 							)
 					);
 
-					robot.drive.setLed(true, false);
-
 					if (controls.driveFlipButton.wasJustPressed()) {
+						robot.states.lightState = States.LightState.GREEN;
 						robot.states.driveDirectionState = States.DriveDirectionState.REVERSE;
 					}
 					break;
@@ -104,9 +104,8 @@ public class CompTeleOp extends LinearOpMode{
 							)
 					);
 
-					robot.drive.setLed(false, true);
-
 					if (controls.driveFlipButton.wasJustPressed()) {
+						robot.states.lightState = States.LightState.RED;
 						robot.states.driveDirectionState = States.DriveDirectionState.FORWARD;
 					}
 					break;
@@ -125,7 +124,7 @@ public class CompTeleOp extends LinearOpMode{
 					if (controls.intakeTrigger.isDown()) {
 						robot.states.intakeState = States.IntakeState.INTAKE;
 					}
-					if (controls.outtakeTrigger.isDown()) {
+					if (controls.outtakeButton.isDown()) {
 						robot.states.intakeState = States.IntakeState.OUTTAKE;
 					}
 					break;
@@ -136,6 +135,12 @@ public class CompTeleOp extends LinearOpMode{
 						robot.states.intakeState = States.IntakeState.IDLE;
 					}
 					if (robot.intake.isLoaded()) {
+						if (robot.states.lightState == States.LightState.RED) {
+							robot.states.lightState = States.LightState.BLINK_RED;
+						}
+						if (robot.states.lightState == States.LightState.GREEN) {
+							robot.states.lightState = States.LightState.BLINK_GREEN;
+						}
 						intakeTimer.reset();
 						robot.states.intakeState = States.IntakeState.UNLOAD;
 					}
@@ -143,7 +148,7 @@ public class CompTeleOp extends LinearOpMode{
 
 				case OUTTAKE:
 					robot.intake.runIntake(-1.0);
-					if (!controls.outtakeTrigger.isDown()) {
+					if (!controls.outtakeButton.isDown()) {
 						robot.states.intakeState = States.IntakeState.IDLE;
 					}
 					break;
@@ -162,6 +167,55 @@ public class CompTeleOp extends LinearOpMode{
 
 				default:
 					robot.states.intakeState = States.IntakeState.IDLE;
+					break;
+			}
+
+			/*Light Control State Machine */
+			switch (robot.states.lightState) {
+				case OFF:
+					robot.drive.setLed(false, false);
+					break;
+
+				case RED:
+					robot.drive.setLed(true, false);
+					break;
+
+				case GREEN:
+					robot.drive.setLed(false, true);
+					break;
+
+				case BLINK_RED:
+					blinkTimer.reset();
+					for (int i = 0; i <= 9; i++) {
+						if (blinkTimer.milliseconds() < 100) {
+							robot.drive.setLed(true, false);
+						}
+						blinkTimer.reset();
+						if (blinkTimer.milliseconds() < 100) {
+							robot.drive.setLed(false, false);
+						}
+						blinkTimer.reset();
+					}
+					robot.states.lightState = States.LightState.RED;
+					break;
+
+				case BLINK_GREEN:
+					blinkTimer.reset();
+					for (int i = 0; i <= 9; i++) {
+						if (blinkTimer.milliseconds() < 100) {
+							robot.drive.setLed(false, true);
+						}
+						blinkTimer.reset();
+						if (blinkTimer.milliseconds() < 100) {
+							robot.drive.setLed(false, false);
+						}
+						blinkTimer.reset();
+					}
+					robot.states.lightState = States.LightState.GREEN;
+					break;
+
+				default:
+					robot.states.lightState = States.LightState.OFF;
 					break;
 			}
 
@@ -411,6 +465,24 @@ public class CompTeleOp extends LinearOpMode{
 
 				default:
 					robot.states.liftState = States.LiftState.IDLE;
+					break;
+			}
+
+			switch (robot.states.capstoneControlState) {
+				case UP:
+					robot.capstone.capSetPosition(0);
+					break;
+
+				case DOWN:
+					robot.capstone.capSetPosition(180);
+					break;
+
+				case POSITION_CONTROL:
+					robot.capstone.capSetPosition(gamepad2ex.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER));
+					break;
+
+				default:
+					robot.states.capstoneControlState = States.CapstoneControlState.POSITION_CONTROL;
 					break;
 			}
 

@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.subsystems.robot;
 
+import android.graphics.Paint;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -8,6 +10,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.State;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.subsystems.capstone.Capstone;
 import org.firstinspires.ftc.teamcode.subsystems.gantry.Gantry;
 import org.firstinspires.ftc.teamcode.subsystems.intake.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.lift.Lift;
@@ -25,6 +28,7 @@ public class CompRobot{
 	public Gantry gantry;
 	public Pusher pusher;
 	public Spinner spinner;
+	public Capstone capstone;
 
 	public States states;
 
@@ -41,6 +45,7 @@ public class CompRobot{
 		gantry = new Gantry(map, telemetry);
 		pusher = new Pusher(map, telemetry);
 		spinner = new Spinner(map, telemetry);
+		capstone = new Capstone(map, telemetry);
 
 		if (resetEncoders) {
 			resetEncoders();

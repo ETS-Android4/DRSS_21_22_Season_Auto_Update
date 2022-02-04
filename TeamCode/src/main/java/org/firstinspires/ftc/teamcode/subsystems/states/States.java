@@ -33,6 +33,15 @@ public class States {
     }
     public IntakeState intakeState;
 
+    public enum LightState {
+        OFF,
+        GREEN,
+        RED,
+        BLINK_GREEN,
+        BLINK_RED
+    }
+    public LightState lightState;
+
     public enum GantryState {
         IDLE,
         RESET_ENCODER,
@@ -69,15 +78,24 @@ public class States {
     public LiftControlState liftControlState;
     public LiftControlState previousliftControlState;
 
+    public enum CapstoneControlState {
+        UP,
+        DOWN,
+        POSITION_CONTROL
+    }
+    public CapstoneControlState capstoneControlState;
+
     public States() {
         driveDirectionState = DriveDirectionState.FORWARD;
         speedState = SpeedState.FULL_SPEED;
         intakeState = IntakeState.IDLE;
+        lightState = LightState.OFF;
         gantryState = GantryState.DOCK;
         pusherState = PusherState.RETRACTED;
         liftState = LiftState.POSITION_CONTROL;
         liftControlState = LiftControlState.HOME;
         previousliftControlState = LiftControlState.LEVEL_THREE;
+        capstoneControlState = CapstoneControlState.UP;
     }
 
 }
