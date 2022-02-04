@@ -44,9 +44,8 @@ public class States {
 
     public enum GantryState {
         IDLE,
-        RESET_ENCODER,
         DOCK,
-        DRIVER_POSITION,
+        POSITION_CONTROL,
         EXTENDING,
         RETRACTING,
         REHOMING
@@ -77,6 +76,7 @@ public class States {
     }
     public LiftControlState liftControlState;
     public LiftControlState previousliftControlState;
+    public LiftControlState desiredliftControlState;
 
     public enum CapstoneControlState {
         UP,
@@ -95,6 +95,7 @@ public class States {
         liftState = LiftState.POSITION_CONTROL;
         liftControlState = LiftControlState.HOME;
         previousliftControlState = LiftControlState.LEVEL_THREE;
+        desiredliftControlState = LiftControlState.HOME;
         capstoneControlState = CapstoneControlState.UP;
     }
 

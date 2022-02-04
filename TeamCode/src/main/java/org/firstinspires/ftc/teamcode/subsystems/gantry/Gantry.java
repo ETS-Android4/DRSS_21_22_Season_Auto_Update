@@ -22,9 +22,9 @@ public class Gantry{
 
 	public PIDEx gantryPID;
 	PIDCoefficientsEx gantryPIDCoefficients;
-	public static double kP = -0.025;
-	public static double kI = 0;
-	public static double kD = 0;
+	public double kP = -0.025;
+	public double kI = 0;
+	public double kD = 0;
 	double intSumMax = 0;
 	double stabilityThreshold = 0;
 	double lowPassGain = 0;
@@ -36,28 +36,34 @@ public class Gantry{
 	double COUNTS_PER_ROTATION = 288;
 	double COUNTS_PER_INCH = PINION_CIRCUMFERENCE * COUNTS_PER_ROTATION;
 
-	public double DOCK_POSTION = 40;
-	public double DRIVER_POSTION_MIN = -110;
-	public double DRIVER_POSTION_MAX = -245;
+	double HOME_POSITION = 40;
+	public double DOCK_POSTION = 0;
+	public double DRIVER_POSTION_MIN = -150;
+	public double DRIVER_POSTION_MAX = -285;
 	public double DRIVER_POSITON_RANGE = DRIVER_POSTION_MAX - DRIVER_POSTION_MIN;
 
-	public double lastResetPosition = 0;
+	//double lastResetPosition = 0;
 
 
 	Telemetry telemetry;
-	TelemetryPacket packet = new TelemetryPacket();
-	FtcDashboard dashboard = FtcDashboard.getInstance();
 
-	public Gantry(HardwareMap map, Telemetry telemetry) {
+	public Gantry(HardwareMap map, Telemetry telemetry, Boolean home) {
 		this.telemetry = telemetry;
 
 		gantryMotor = map.get(DcMotorEx.class, "gantryMotor");
 		gantryMotor.setDirection(DcMotorEx.Direction.REVERSE);
 		gantryMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-		gantryMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+		reset();
 
 		gantryPIDCoefficients = new PIDCoefficientsEx(kP, kI, kD, intSumMax, stabilityThreshold, lowPassGain);
 		gantryPID = new PIDEx(gantryPIDCoefficients);
+
+		if (home) {
+			while (gantryMotor.getCurrentPosition() < HOME_POSITION) {
+				update(HOME_POSITION);
+			}
+			reset();
+		}
 	}
 
 	public void setGantryPower(double power) {
@@ -81,25 +87,19 @@ public class Gantry{
 	public void update(double setPoint) {
 		updateGantryPID();
 
-		double offsetSetPoint = setPoint - lastResetPosition;
+		//double offsetSetPoint = setPoint - lastResetPosition;
 
 		double output = Range.clip(
-				gantryPID.calculate(offsetSetPoint, gantryMotor.getCurrentPosition()),
+				gantryPID.calculate(setPoint, gantryMotor.getCurrentPosition()),
 				-1,
 				1
 		);
 
 		gantryMotor.setPower(output);
-
-		if ((gantryMotor.getCurrentPosition() <= (offsetSetPoint + 1.0)) && (gantryMotor.getCurrentPosition() >= (offsetSetPoint - 1.0))) {
-			atSetPoint = true;
-		}
-		else {
-			atSetPoint = false;
-		}
 	}
 
 	public void reset() {
-		lastResetPosition = gantryMotor.getCurrentPosition() - DOCK_POSTION;
+		gantryMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+		gantryMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
 	}
 }

@@ -42,14 +42,10 @@ public class CompRobot{
 		drive = new CompMecanumDrive(map);
 		intake = new Intake(map, telemetry);
 		lift = new Lift(map, telemetry);
-		gantry = new Gantry(map, telemetry);
+		gantry = new Gantry(map, telemetry, resetEncoders);
 		pusher = new Pusher(map, telemetry);
 		spinner = new Spinner(map, telemetry);
 		capstone = new Capstone(map, telemetry);
-
-		if (resetEncoders) {
-			resetEncoders();
-		}
 
 		states = new States();
 
@@ -59,10 +55,5 @@ public class CompRobot{
 		packet.put("Robot", "Initialized");
 		dashboard.sendTelemetryPacket(packet);
 
-	}
-
-	void resetEncoders() {
-		gantry.gantryMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-		gantry.gantryMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
 	}
 }

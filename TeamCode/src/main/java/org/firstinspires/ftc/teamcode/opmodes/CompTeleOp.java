@@ -1,28 +1,24 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
 import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
-import com.arcrobotics.ftclib.gamepad.TriggerReader;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.subsystems.controls.Controls;
 import org.firstinspires.ftc.teamcode.subsystems.robot.CompRobot;
 import org.firstinspires.ftc.teamcode.subsystems.states.States;
 
-@TeleOp(name = "Comp TeleOp", group = "Comp")
+@TeleOp(name = "Angler TeleOp", group = "Comp")
 public class CompTeleOp extends LinearOpMode{
 
-	private GamepadEx gamepad1ex;
-	private GamepadEx gamepad2ex;
 	Controls controls;
 
 	CompRobot robot;
@@ -37,8 +33,8 @@ public class CompTeleOp extends LinearOpMode{
 
 	@Override
 	public void runOpMode() throws InterruptedException{
-		gamepad1ex = new GamepadEx(gamepad1);
-		gamepad2ex = new GamepadEx(gamepad2);
+		GamepadEx gamepad1ex = new GamepadEx(gamepad1);
+		GamepadEx gamepad2ex = new GamepadEx(gamepad2);
 		controls = new Controls(gamepad1ex, gamepad2ex);
 
 		robot = new CompRobot(hardwareMap, telemetry, true);
@@ -233,7 +229,7 @@ public class CompTeleOp extends LinearOpMode{
 					}
 					break;
 
-				case DRIVER_POSITION:
+				case POSITION_CONTROL:
 					robot.gantry.kP = -0.0075;
 					double CalculatedPosition = robot.gantry.DRIVER_POSTION_MIN + Range.clip(
 							(robot.gantry.DRIVER_POSITON_RANGE * gamepad2ex.getLeftY()),
@@ -249,7 +245,7 @@ public class CompTeleOp extends LinearOpMode{
 
 					if (robot.gantry.getPosition() <= robot.gantry.DRIVER_POSTION_MIN) {
 						robot.states.liftControlState = robot.states.previousliftControlState;
-						robot.states.gantryState = States.GantryState.DRIVER_POSITION;
+						robot.states.gantryState = States.GantryState.POSITION_CONTROL;
 					}
 					break;
 
@@ -266,7 +262,8 @@ public class CompTeleOp extends LinearOpMode{
 						robot.gantry.setGantryPower(gamepad2ex.getRightY());
 					}
 					else {
-						robot.gantry.reset();
+						robot.gantry.gantryMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+						robot.gantry.gantryMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
 						robot.states.gantryState = States.GantryState.DOCK;
 					}
 					break;
