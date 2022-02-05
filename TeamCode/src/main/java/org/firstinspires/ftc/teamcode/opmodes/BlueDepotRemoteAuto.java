@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.subsystems.robot.CompRobot;
 import org.firstinspires.ftc.teamcode.subsystems.states.States;
+import org.firstinspires.ftc.teamcode.subsystems.trajectories.BlueDepotRemoteTrajectory;
 import org.firstinspires.ftc.teamcode.subsystems.webcam.Webcam;
 
 /**
@@ -19,6 +20,7 @@ import org.firstinspires.ftc.teamcode.subsystems.webcam.Webcam;
 public class BlueDepotRemoteAuto extends LinearOpMode {
 
     CompRobot robot;
+    BlueDepotRemoteTrajectory trajectory;
     Webcam webcam;
 
     int duckPosition = 1;
@@ -35,6 +37,7 @@ public class BlueDepotRemoteAuto extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
 
         robot = new CompRobot(hardwareMap, telemetry, true);
+        trajectory = new BlueDepotRemoteTrajectory(robot.drive);
         webcam = new Webcam(hardwareMap, telemetry);
 
         /*Pre-Start/Post-Init Loop*/
