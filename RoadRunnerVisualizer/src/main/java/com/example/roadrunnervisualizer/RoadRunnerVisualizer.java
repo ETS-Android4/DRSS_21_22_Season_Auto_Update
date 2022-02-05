@@ -30,6 +30,7 @@ public class RoadRunnerVisualizer {
                         .splineTo(new Vector2d(-12, 45), Math.toRadians(270.0))
                         .splineToLinearHeading(new Pose2d(8, 64, Math.toRadians(0.0)), Math.toRadians(90))
                         .forward(40)
+                        .splineToLinearHeading(new Pose2d(42, 45, Math.toRadians(0.0)), Math.toRadians(0.0))
                         .build()
                 );
 

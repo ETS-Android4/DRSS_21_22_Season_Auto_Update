@@ -2,11 +2,14 @@ package org.firstinspires.ftc.teamcode.opmodes;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.teamcode.subsystems.roadrunner.drive.PoseStorage;
 import org.firstinspires.ftc.teamcode.subsystems.robot.CompRobot;
 import org.firstinspires.ftc.teamcode.subsystems.states.States;
 import org.firstinspires.ftc.teamcode.subsystems.trajectories.BlueDepotRemoteTrajectory;
@@ -27,7 +30,11 @@ public class BlueDepotRemoteAuto extends LinearOpMode {
     double gantryExtension = 0;
     double liftCustomHeight = 0;
     double capstonePosition = 0;
+    double cycleTime = 0;
 
+    Pose2d poseEstimate;
+
+    ElapsedTime matchTimer = new ElapsedTime();
     ElapsedTime intakeTimer = new ElapsedTime();
 
     TelemetryPacket packet = new TelemetryPacket();
@@ -37,7 +44,7 @@ public class BlueDepotRemoteAuto extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
 
         robot = new CompRobot(hardwareMap, telemetry, true);
-        trajectory = new BlueDepotRemoteTrajectory(robot.drive);
+        trajectory = new BlueDepotRemoteTrajectory(robot.drive, telemetry);
         webcam = new Webcam(hardwareMap, telemetry);
 
         /*Pre-Start/Post-Init Loop*/
@@ -53,7 +60,21 @@ public class BlueDepotRemoteAuto extends LinearOpMode {
             dashboard.sendTelemetryPacket(packet);
         }
 
+        matchTimer.reset();
+
         while (opModeIsActive()) {
+
+            /*
+             *
+             *
+             * Beginning of Loop Updates
+             *
+             *
+             */
+
+            robot.drive.update();
+            poseEstimate = robot.drive.getPoseEstimate();
+            PoseStorage.currentPose = poseEstimate;
 
             /*
             *
@@ -62,6 +83,85 @@ public class BlueDepotRemoteAuto extends LinearOpMode {
             *
             *
             */
+
+            switch (trajectory.trajectoryControlState) {
+                case IDLE:
+                    trajectory.trajectoryControlState = BlueDepotRemoteTrajectory.TrajectoryControlState.RANDOMIZED_PLACE_TRAJECTORY;
+                    robot.drive.followTrajectoryAsync(trajectory.randomizedPlaceTrajectory);
+                    break;
+
+                case RANDOMIZED_PLACE_TRAJECTORY:
+                    if (!robot.drive.isBusy()) {
+                        trajectory.trajectoryControlState = BlueDepotRemoteTrajectory.TrajectoryControlState.RANDOMIZED_PLACE;
+                    }
+                    break;
+
+                case RANDOMIZED_PLACE:
+                    trajectory.trajectoryControlState = BlueDepotRemoteTrajectory.TrajectoryControlState.DUCK_SPINNER_TRAJECTORY;
+                    robot.drive.followTrajectoryAsync(trajectory.duckSpinnerTrajectory);
+                    break;
+
+                case DUCK_SPINNER_TRAJECTORY:
+                    if (!robot.drive.isBusy()) {
+                        trajectory.trajectoryControlState = BlueDepotRemoteTrajectory.TrajectoryControlState.SPIN_DUCK;
+                    }
+                    break;
+
+                case SPIN_DUCK:
+                    trajectory.trajectoryControlState = BlueDepotRemoteTrajectory.TrajectoryControlState.DEPOT_ALIGNMENT_TRAJECTORY1;
+                    robot.drive.followTrajectoryAsync(trajectory.depotAlignmentTrajectory1);
+                    break;
+
+                case DEPOT_ALIGNMENT_TRAJECTORY1:
+                    if (!robot.drive.isBusy()) {
+                        trajectory.trajectoryControlState = BlueDepotRemoteTrajectory.TrajectoryControlState.DEPOT_ALIGNMENT_TRAJECTORY2;
+                        robot.drive.followTrajectoryAsync(trajectory.depotAlignmentTrajectory2);
+                    }
+                    break;
+
+                case DEPOT_ALIGNMENT_TRAJECTORY2:
+                    if (!robot.drive.isBusy()) {
+                        trajectory.trajectoryControlState = BlueDepotRemoteTrajectory.TrajectoryControlState.INITIAL_DEPOT_TRAJECTORY;
+                        robot.drive.followTrajectoryAsync(trajectory.initialDepotTrajectory);
+                    }
+                    break;
+
+                case INITIAL_DEPOT_TRAJECTORY:
+                    if (!robot.drive.isBusy()) {
+                        trajectory.trajectoryControlState = BlueDepotRemoteTrajectory.TrajectoryControlState.INTAKE;
+                    }
+                    break;
+
+                case INTAKE:
+                    trajectory.trajectoryControlState = BlueDepotRemoteTrajectory.TrajectoryControlState.IDLE;
+                    break;
+
+                case CHECK_CYCLE:
+                    double timeLeft = 30 - matchTimer.seconds();
+
+                    if (timeLeft > cycleTime) {
+                        trajectory.trajectoryControlState = BlueDepotRemoteTrajectory.TrajectoryControlState.CYCLE_DEPOT_EXIT_TRAJECTORY;
+                    }
+                    else {
+                        Trajectory parkTrajectory = robot.drive.trajectoryBuilder(poseEstimate)
+                                .splineToLinearHeading(new Pose2d(42, 45, Math.toRadians(0.0)), Math.toRadians(0.0))
+                                .build();
+                        robot.drive.followTrajectoryAsync(parkTrajectory);
+                        trajectory.trajectoryControlState = BlueDepotRemoteTrajectory.TrajectoryControlState.PARK;
+                    }
+
+                    break;
+
+                case PARK:
+                    if (!robot.drive.isBusy()) {
+                        trajectory.trajectoryControlState = BlueDepotRemoteTrajectory.TrajectoryControlState.IDLE;
+                    }
+                    break;
+
+                default:
+                    trajectory.trajectoryControlState = BlueDepotRemoteTrajectory.TrajectoryControlState.IDLE;
+                    break;
+            }
 
             /*
             *
