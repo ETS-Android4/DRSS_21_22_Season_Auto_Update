@@ -22,7 +22,7 @@ public class Gantry{
 
 	public PIDEx gantryPID;
 	PIDCoefficientsEx gantryPIDCoefficients;
-	public double kP = -0.04;
+	public double kP = -0.05;
 	public double kI = 0;
 	public double kD = 0;
 	double intSumMax = 0;

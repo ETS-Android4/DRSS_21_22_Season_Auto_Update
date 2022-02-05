@@ -35,6 +35,7 @@ public class BlueDepotRemoteAuto extends LinearOpMode {
     Pose2d poseEstimate;
 
     ElapsedTime matchTimer = new ElapsedTime();
+    ElapsedTime generalTimer = new ElapsedTime();
     ElapsedTime intakeTimer = new ElapsedTime();
 
     TelemetryPacket packet = new TelemetryPacket();
@@ -45,13 +46,13 @@ public class BlueDepotRemoteAuto extends LinearOpMode {
 
         robot = new CompRobot(hardwareMap, telemetry, true);
         trajectory = new BlueDepotRemoteTrajectory(robot.drive, telemetry);
-        webcam = new Webcam(hardwareMap, telemetry);
+        //webcam = new Webcam(hardwareMap, telemetry);
 
         /*Pre-Start/Post-Init Loop*/
         while (!opModeIsActive()) {
-            duckPosition = webcam.locateDuck();
+            /*duckPosition = webcam.locateDuck();
             telemetry.addData("Position: ", duckPosition);
-            packet.put("Position: ", duckPosition);
+            packet.put("Position: ", duckPosition);*/
 
             telemetry.addData("Robot", "Initialized");
             packet.put("Robot", "Initialized");
@@ -61,6 +62,8 @@ public class BlueDepotRemoteAuto extends LinearOpMode {
         }
 
         matchTimer.reset();
+        trajectory.trajectoryControlState = BlueDepotRemoteTrajectory.TrajectoryControlState.RANDOMIZED_PLACE_TRAJECTORY;
+        robot.drive.followTrajectoryAsync(trajectory.randomizedPlaceTrajectory);
 
         while (opModeIsActive()) {
 
@@ -85,11 +88,6 @@ public class BlueDepotRemoteAuto extends LinearOpMode {
             */
 
             switch (trajectory.trajectoryControlState) {
-                case IDLE:
-                    trajectory.trajectoryControlState = BlueDepotRemoteTrajectory.TrajectoryControlState.RANDOMIZED_PLACE_TRAJECTORY;
-                    robot.drive.followTrajectoryAsync(trajectory.randomizedPlaceTrajectory);
-                    break;
-
                 case RANDOMIZED_PLACE_TRAJECTORY:
                     if (!robot.drive.isBusy()) {
                         trajectory.trajectoryControlState = BlueDepotRemoteTrajectory.TrajectoryControlState.RANDOMIZED_PLACE;
@@ -103,13 +101,21 @@ public class BlueDepotRemoteAuto extends LinearOpMode {
 
                 case DUCK_SPINNER_TRAJECTORY:
                     if (!robot.drive.isBusy()) {
+                        generalTimer.reset();
                         trajectory.trajectoryControlState = BlueDepotRemoteTrajectory.TrajectoryControlState.SPIN_DUCK;
                     }
                     break;
 
                 case SPIN_DUCK:
-                    trajectory.trajectoryControlState = BlueDepotRemoteTrajectory.TrajectoryControlState.DEPOT_ALIGNMENT_TRAJECTORY1;
-                    robot.drive.followTrajectoryAsync(trajectory.depotAlignmentTrajectory1);
+                    while (generalTimer.seconds() < 2) {
+                        robot.spinner.runSpinner(-0.75);
+                    }
+                    if (generalTimer.seconds() >= 2) {
+                        robot.spinner.stop();
+                        trajectory.trajectoryControlState = BlueDepotRemoteTrajectory.TrajectoryControlState.DEPOT_ALIGNMENT_TRAJECTORY1;
+                        robot.drive.followTrajectoryAsync(trajectory.depotAlignmentTrajectory1);
+                    }
+
                     break;
 
                 case DEPOT_ALIGNMENT_TRAJECTORY1:
@@ -121,6 +127,13 @@ public class BlueDepotRemoteAuto extends LinearOpMode {
 
                 case DEPOT_ALIGNMENT_TRAJECTORY2:
                     if (!robot.drive.isBusy()) {
+                        trajectory.trajectoryControlState = BlueDepotRemoteTrajectory.TrajectoryControlState.DEPOT_ALIGNMENT_TRAJECTORY3;
+                        robot.drive.followTrajectoryAsync(trajectory.depotAlignmentTrajectory3);
+                    }
+                    break;
+
+                case DEPOT_ALIGNMENT_TRAJECTORY3:
+                    if (!robot.drive.isBusy()) {
                         trajectory.trajectoryControlState = BlueDepotRemoteTrajectory.TrajectoryControlState.INITIAL_DEPOT_TRAJECTORY;
                         robot.drive.followTrajectoryAsync(trajectory.initialDepotTrajectory);
                     }
@@ -128,7 +141,7 @@ public class BlueDepotRemoteAuto extends LinearOpMode {
 
                 case INITIAL_DEPOT_TRAJECTORY:
                     if (!robot.drive.isBusy()) {
-                        trajectory.trajectoryControlState = BlueDepotRemoteTrajectory.TrajectoryControlState.INTAKE;
+                        trajectory.trajectoryControlState = BlueDepotRemoteTrajectory.TrajectoryControlState.IDLE;
                     }
                     break;
 
@@ -156,6 +169,9 @@ public class BlueDepotRemoteAuto extends LinearOpMode {
                     if (!robot.drive.isBusy()) {
                         trajectory.trajectoryControlState = BlueDepotRemoteTrajectory.TrajectoryControlState.IDLE;
                     }
+                    break;
+
+                case IDLE:
                     break;
 
                 default:
@@ -337,6 +353,10 @@ public class BlueDepotRemoteAuto extends LinearOpMode {
             *
             *
             */
+            telemetry.addLine("Position")
+                    .addData("x", poseEstimate.getX())
+                    .addData("y", poseEstimate.getY())
+                    .addData("heading", Math.toDegrees(poseEstimate.getHeading()));
 
             telemetry.update();
             dashboard.sendTelemetryPacket(packet);

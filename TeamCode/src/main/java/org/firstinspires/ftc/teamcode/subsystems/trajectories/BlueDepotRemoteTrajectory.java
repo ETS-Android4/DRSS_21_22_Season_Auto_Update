@@ -18,6 +18,7 @@ public class BlueDepotRemoteTrajectory{
     public Trajectory duckSpinnerTrajectory;
     public Trajectory depotAlignmentTrajectory1;
     public Trajectory depotAlignmentTrajectory2;
+    public Trajectory depotAlignmentTrajectory3;
     public Trajectory initialDepotTrajectory;
     public Trajectory cycleAlignToPlaceTrajectory;
     public Trajectory cycleAlignToDepotTrajectory;
@@ -31,6 +32,7 @@ public class BlueDepotRemoteTrajectory{
         SPIN_DUCK,
         DEPOT_ALIGNMENT_TRAJECTORY1,
         DEPOT_ALIGNMENT_TRAJECTORY2,
+        DEPOT_ALIGNMENT_TRAJECTORY3,
         INITIAL_DEPOT_TRAJECTORY,
         INTAKE,
         CHECK_CYCLE,
@@ -56,23 +58,28 @@ public class BlueDepotRemoteTrajectory{
         telemetry.update();
 
         randomizedPlaceTrajectory = drive.trajectoryBuilder(startPose)
-                .lineToLinearHeading(new Pose2d(-20, 45, Math.toRadians(110)))
+                .lineToLinearHeading(new Pose2d(-22, 42, Math.toRadians(135)))
                 .build();
 
         duckSpinnerTrajectory = drive.trajectoryBuilder(randomizedPlaceTrajectory.end())
-                .splineToLinearHeading(new Pose2d(-60, 54, Math.toRadians(90.0)), Math.toRadians(90.0))
+                .splineTo(new Vector2d(-55, 42), Math.toRadians(110.0))
                 .build();
 
-        depotAlignmentTrajectory1 = drive.trajectoryBuilder(duckSpinnerTrajectory.end(), true)
-                .splineTo(new Vector2d(-60, 44), Math.toRadians(90.0))
+        depotAlignmentTrajectory1 = drive.trajectoryBuilder(duckSpinnerTrajectory.end())
+                .back(6)
                 .build();
 
         depotAlignmentTrajectory2 = drive.trajectoryBuilder(depotAlignmentTrajectory1.end())
-                .splineToLinearHeading(new Pose2d(-30, 62.5, Math.toRadians(0.0)), Math.toRadians(90.0))
+                .splineToLinearHeading(new Pose2d(-30, 64, Math.toRadians(20.0)), Math.toRadians(110.0))
                 .build();
 
-        initialDepotTrajectory = drive.trajectoryBuilder(depotAlignmentTrajectory2.end())
-                .splineTo(new Vector2d(-12, 45), Math.toRadians(0.0))
+        depotAlignmentTrajectory3 = drive.trajectoryBuilder(depotAlignmentTrajectory2.end())
+                .strafeLeft(5)
+                .build();
+
+        initialDepotTrajectory = drive.trajectoryBuilder(depotAlignmentTrajectory3.end())
+                .forward(75)
+                //.splineTo(new Vector2d(45, 65), Math.toRadians(0.0))
                 .build();
 
         telemetry.addData("Trajectories: ", "Created");
