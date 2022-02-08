@@ -26,6 +26,7 @@ public class BlueDepotRemoteTrajectory{
 
     public enum TrajectoryControlState {
         IDLE,
+        INITIAL_LIFT,
         RANDOMIZED_PLACE_TRAJECTORY,
         RANDOMIZED_PLACE,
         DUCK_SPINNER_TRAJECTORY,
@@ -44,6 +45,15 @@ public class BlueDepotRemoteTrajectory{
         PARK
     }
     public TrajectoryControlState trajectoryControlState;
+
+    public enum PlaceControlState {
+        SET_HEIGHT,
+        WAIT_FOR_HEIGHT,
+        MOVE_GANTRY,
+        PLACE,
+        RESET
+    }
+    public PlaceControlState placeControlState;
 
     public BlueDepotRemoteTrajectory(CompMecanumDrive drive, Telemetry telemetry) {
         this.drive = drive;

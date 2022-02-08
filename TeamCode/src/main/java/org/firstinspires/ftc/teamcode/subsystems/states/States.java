@@ -96,7 +96,7 @@ public class States {
         liftControlState = LiftControlState.HOME;
         previousliftControlState = LiftControlState.LEVEL_THREE;
         desiredliftControlState = LiftControlState.HOME;
-        capstoneControlState = CapstoneControlState.UP;
+        capstoneControlState = CapstoneControlState.POSITION_CONTROL;
     }
 
 }
