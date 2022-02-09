@@ -475,14 +475,8 @@ public class CompTeleOp extends LinearOpMode{
 					break;
 
 				case POSITION_CONTROL:
-					/*double capPosition = gamepad2.right_trigger;
-					robot.capstone.capSetPosition(capPosition);*/
-					if (controls.capstoneTrigger.isDown()) {
-						robot.capstone.capServo.setPosition(1.0);
-					}
-					else {
-						robot.capstone.capServo.setPosition(0.0);
-					}
+					double capPosition = gamepad2.right_trigger;
+					robot.capstone.capSetPosition(capPosition);
 					break;
 
 				default:

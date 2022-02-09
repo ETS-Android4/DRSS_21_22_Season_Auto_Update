@@ -38,7 +38,7 @@ public class Gantry{
 
 	double HOME_POSITION = 40;
 	public double DOCK_POSTION = 0;
-	public double DRIVER_POSTION_MIN = -150;
+	public double DRIVER_POSTION_MIN = -160;
 	public double DRIVER_POSTION_MAX = -285;
 	public double DRIVER_POSITON_RANGE = DRIVER_POSTION_MAX - DRIVER_POSTION_MIN;
 
