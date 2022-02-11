@@ -72,23 +72,23 @@ public class BlueDepotRemoteTrajectory{
                 .build();
 
         duckSpinnerTrajectory = drive.trajectoryBuilder(randomizedPlaceTrajectory.end())
-                .splineTo(new Vector2d(-55, 42), Math.toRadians(110.0))
+                .splineTo(new Vector2d(-58, 48), Math.toRadians(95.0))
                 .build();
 
         depotAlignmentTrajectory1 = drive.trajectoryBuilder(duckSpinnerTrajectory.end())
-                .back(6)
+                .back(15)
                 .build();
 
         depotAlignmentTrajectory2 = drive.trajectoryBuilder(depotAlignmentTrajectory1.end())
-                .splineToLinearHeading(new Pose2d(-30, 64, Math.toRadians(20.0)), Math.toRadians(110.0))
+                .splineTo(new Vector2d(10, 55), Math.toRadians(0.0))
                 .build();
 
         depotAlignmentTrajectory3 = drive.trajectoryBuilder(depotAlignmentTrajectory2.end())
-                .strafeLeft(5)
+                .strafeLeft(15)
                 .build();
 
         initialDepotTrajectory = drive.trajectoryBuilder(depotAlignmentTrajectory3.end())
-                .forward(75)
+                .forward(30)
                 //.splineTo(new Vector2d(45, 65), Math.toRadians(0.0))
                 .build();
 
