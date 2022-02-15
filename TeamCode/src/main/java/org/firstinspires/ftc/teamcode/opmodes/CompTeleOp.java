@@ -26,6 +26,7 @@ public class CompTeleOp extends LinearOpMode{
 	double speedOverride = 1.0;
 
 	ElapsedTime intakeTimer = new ElapsedTime();
+	ElapsedTime pusherTimer = new ElapsedTime();
 	ElapsedTime blinkTimer = new ElapsedTime();
 
 	TelemetryPacket packet = new TelemetryPacket();
@@ -278,13 +279,17 @@ public class CompTeleOp extends LinearOpMode{
 				case EXTENDED:
 					robot.pusher.pusherSetPosition(180);
 					if (controls.pusherButton.wasJustPressed()) {
+						intakeTimer.reset();
 						robot.states.pusherState = States.PusherState.RETRACTED;
 					}
 					break;
 
 				case RETRACTED:
 					robot.pusher.pusherSetPosition(0);
-					if (controls.pusherButton.wasJustPressed()) {
+					/*if (controls.pusherButton.wasJustPressed()) {
+						robot.states.pusherState = States.PusherState.EXTENDED;
+					}*/
+					if (intakeTimer.seconds() > 0.3) {
 						robot.states.pusherState = States.PusherState.EXTENDED;
 					}
 					break;
@@ -481,6 +486,33 @@ public class CompTeleOp extends LinearOpMode{
 
 				default:
 					robot.states.capstoneControlState = States.CapstoneControlState.POSITION_CONTROL;
+					break;
+			}
+
+			switch (robot.states.spinnerControlState) {
+				case IDLE:
+					robot.spinner.runSpinner(0.0);
+					if (controls.duckSpinnerButton.isDown()) {
+						robot.states.spinnerControlState = States.SpinnerControlState.BLUE;
+					}
+					break;
+
+				case RED:
+					robot.spinner.runSpinner(0.5);
+					if (!controls.duckSpinnerButton.isDown()) {
+						robot.states.spinnerControlState = States.SpinnerControlState.IDLE;
+					}
+					break;
+
+				case BLUE:
+					robot.spinner.runSpinner(-0.5);
+					if (!controls.duckSpinnerButton.isDown()) {
+						robot.states.spinnerControlState = States.SpinnerControlState.IDLE;
+					}
+					break;
+
+				default:
+					robot.states.spinnerControlState = States.SpinnerControlState.IDLE;
 					break;
 			}
 

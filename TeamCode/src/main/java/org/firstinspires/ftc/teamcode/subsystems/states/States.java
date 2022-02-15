@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.config.Config;
 
 import org.firstinspires.ftc.teamcode.subsystems.gantry.Gantry;
 import org.firstinspires.ftc.teamcode.subsystems.pusher.Pusher;
+import org.firstinspires.ftc.teamcode.subsystems.spinner.Spinner;
 
 /**
  * Created by Antoine on 11/21/2021
@@ -85,6 +86,13 @@ public class States {
     }
     public CapstoneControlState capstoneControlState;
 
+    public enum SpinnerControlState {
+        IDLE,
+        RED,
+        BLUE
+    }
+    public SpinnerControlState spinnerControlState;
+
     public States() {
         driveDirectionState = DriveDirectionState.FORWARD;
         speedState = SpeedState.FULL_SPEED;
@@ -97,6 +105,7 @@ public class States {
         previousliftControlState = LiftControlState.LEVEL_THREE;
         desiredliftControlState = LiftControlState.HOME;
         capstoneControlState = CapstoneControlState.POSITION_CONTROL;
+        spinnerControlState = SpinnerControlState.IDLE;
     }
 
 }

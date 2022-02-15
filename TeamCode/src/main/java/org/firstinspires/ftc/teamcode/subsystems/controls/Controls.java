@@ -29,6 +29,8 @@ public class Controls{
 
 	public TriggerReader capstoneTrigger;
 
+	public ButtonReader duckSpinnerButton;
+
 	public Controls(GamepadEx gamepad1ex, GamepadEx gamepad2ex) {
 
 		/*Speed Controls*/
@@ -82,6 +84,11 @@ public class Controls{
 				gamepad2ex, GamepadKeys.Trigger.RIGHT_TRIGGER
 		);
 
+		/*Duck Spinner Controls*/
+		duckSpinnerButton = new ButtonReader(
+				gamepad2ex, GamepadKeys.Button.DPAD_LEFT
+		);
+
 	}
 
 	public void readValues() {
@@ -102,5 +109,7 @@ public class Controls{
 		liftHeightDecreaseButton.readValue();
 
 		capstoneTrigger.readValue();
+
+		duckSpinnerButton.readValue();
 	}
 }
