@@ -223,7 +223,7 @@ public class CompTeleOp extends LinearOpMode{
 					break;
 
 				case DOCK:
-					robot.gantry.kP = -0.025;
+					robot.gantry.kP = -0.03;
 					robot.gantry.update(robot.gantry.DOCK_POSTION);
 					if (gamepad2ex.getLeftY() <= -0.1) {
 						robot.states.gantryState = States.GantryState.REHOMING;
@@ -241,7 +241,7 @@ public class CompTeleOp extends LinearOpMode{
 					break;
 
 				case EXTENDING:
-					robot.gantry.kP = -0.025;
+					robot.gantry.kP = -0.03;
 					robot.gantry.update(robot.gantry.DRIVER_POSTION_MIN);
 
 					if (robot.gantry.getPosition() <= robot.gantry.DRIVER_POSTION_MIN) {
@@ -251,7 +251,7 @@ public class CompTeleOp extends LinearOpMode{
 					break;
 
 				case RETRACTING:
-					robot.gantry.kP = -0.025;
+					robot.gantry.kP = -0.03;
 					robot.states.liftControlState = States.LiftControlState.HOME;
 					if (robot.lift.getHeight() < 1.0) {
 						robot.states.gantryState = States.GantryState.DOCK;
@@ -276,21 +276,18 @@ public class CompTeleOp extends LinearOpMode{
 
 			/*Pusher Control State Machine*/
 			switch (robot.states.pusherState) {
-				case EXTENDED:
-					robot.pusher.pusherSetPosition(180);
+				case RETRACTED:
+					robot.pusher.pusherSetPosition(0.0);
 					if (controls.pusherButton.wasJustPressed()) {
-						intakeTimer.reset();
-						robot.states.pusherState = States.PusherState.RETRACTED;
+						pusherTimer.reset();
+						robot.states.pusherState = States.PusherState.EXTENDED;
 					}
 					break;
 
-				case RETRACTED:
-					robot.pusher.pusherSetPosition(0);
-					/*if (controls.pusherButton.wasJustPressed()) {
-						robot.states.pusherState = States.PusherState.EXTENDED;
-					}*/
-					if (intakeTimer.seconds() > 0.3) {
-						robot.states.pusherState = States.PusherState.EXTENDED;
+				case EXTENDED:
+					robot.pusher.pusherSetPosition(1.0);
+					if (pusherTimer.seconds() > 0.3) {
+						robot.states.pusherState = States.PusherState.RETRACTED;
 					}
 					break;
 
