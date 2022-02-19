@@ -118,7 +118,7 @@ public class BlueDepotRemoteAuto extends LinearOpMode {
                 case RANDOMIZED_PLACE:
                     switch (trajectory.placeControlState) {
                         case WAIT_FOR_HEIGHT:
-                            if (robot.lift.getHeight() > (liftCustomHeight-1)) {
+                            if (robot.lift.getHeight() > (liftCustomHeight-2)) {
                                 trajectory.placeControlState = BlueDepotRemoteTrajectory.PlaceControlState.MOVE_GANTRY;
                             }
                             break;
@@ -157,10 +157,10 @@ public class BlueDepotRemoteAuto extends LinearOpMode {
                                 robot.gantry.DRIVER_POSTION_MIN = -155;
                             }
                             if (generalTimer.seconds() > 1) {
-                                robot.states.gantryState = States.GantryState.RETRACTING;
-                                if (robot.lift.getHeight() < 1.0) {
-                                    trajectory.trajectoryControlState = BlueDepotRemoteTrajectory.TrajectoryControlState.DUCK_SPINNER_TRAJECTORY;
+                                robot.states.liftControlState = States.LiftControlState.HOME;
+                                if (robot.lift.getHeight() <= 2.0) {
                                     robot.drive.followTrajectoryAsync(trajectory.duckSpinnerTrajectory);
+                                    trajectory.trajectoryControlState = BlueDepotRemoteTrajectory.TrajectoryControlState.DUCK_SPINNER_TRAJECTORY;
                                 }
                             }
                             break;
@@ -169,6 +169,7 @@ public class BlueDepotRemoteAuto extends LinearOpMode {
 
                 case DUCK_SPINNER_TRAJECTORY:
                     if (!robot.drive.isBusy()) {
+                        robot.states.gantryState = States.GantryState.DOCK;
                         generalTimer.reset();
                         trajectory.trajectoryControlState = BlueDepotRemoteTrajectory.TrajectoryControlState.SPIN_DUCK;
                     }
@@ -176,7 +177,7 @@ public class BlueDepotRemoteAuto extends LinearOpMode {
 
                 case SPIN_DUCK:
                     while (generalTimer.seconds() < 2) {
-                        robot.spinner.runSpinner(-0.5);
+                        robot.spinner.runSpinner(-0.7);
                     }
                     if (generalTimer.seconds() >= 2.5) {
                         robot.spinner.stop();
@@ -210,11 +211,12 @@ public class BlueDepotRemoteAuto extends LinearOpMode {
 
                 case INITIAL_DEPOT_TRAJECTORY:
                     if (!robot.drive.isBusy()) {
-                        trajectory.trajectoryControlState = BlueDepotRemoteTrajectory.TrajectoryControlState.IDLE;
+                        trajectory.trajectoryControlState = BlueDepotRemoteTrajectory.TrajectoryControlState.INTAKE;
                     }
                     break;
 
                 case INTAKE:
+                    robot.states.intakeState = States.IntakeState.INTAKE;
                     trajectory.trajectoryControlState = BlueDepotRemoteTrajectory.TrajectoryControlState.IDLE;
                     break;
 
@@ -298,12 +300,12 @@ public class BlueDepotRemoteAuto extends LinearOpMode {
                     break;
 
                 case DOCK:
-                    robot.gantry.kP = -0.025;
+                    robot.gantry.kP = -0.03;
                     robot.gantry.update(robot.gantry.DOCK_POSTION);
                     break;
 
                 case POSITION_CONTROL:
-                    robot.gantry.kP = -0.02;
+                    robot.gantry.kP = -0.03;
                     double CalculatedPosition = robot.gantry.DRIVER_POSTION_MIN + Range.clip(
                             (robot.gantry.DRIVER_POSITON_RANGE * gantryExtension),
                             robot.gantry.DRIVER_POSITON_RANGE,
@@ -313,7 +315,7 @@ public class BlueDepotRemoteAuto extends LinearOpMode {
                     break;
 
                 case EXTENDING:
-                    robot.gantry.kP = -0.025;
+                    robot.gantry.kP = -0.03;
                     robot.gantry.update(robot.gantry.DRIVER_POSTION_MIN);
 
                     if (robot.gantry.getPosition() <= robot.gantry.DRIVER_POSTION_MIN) {
@@ -323,10 +325,10 @@ public class BlueDepotRemoteAuto extends LinearOpMode {
                     break;
 
                 case RETRACTING:
-                    robot.gantry.kP = -0.025;
+                    robot.gantry.kP = -0.03;
                     robot.states.liftControlState = States.LiftControlState.HOME;
                     if (robot.lift.getHeight() < 1.0) {
-                        robot.states.gantryState = States.GantryState.DOCK;
+                        //robot.states.gantryState = States.GantryState.DOCK;
                     }
                     break;
 

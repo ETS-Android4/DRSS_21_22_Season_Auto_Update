@@ -39,7 +39,7 @@ public class Controls{
 		);
 
 		halfSpeedButton = new ButtonReader(
-				gamepad1ex, GamepadKeys.Button.X
+				gamepad1ex, GamepadKeys.Button.START
 		);
 
 		fullSpeedButton = new ButtonReader(
@@ -48,7 +48,7 @@ public class Controls{
 
 		/*Drivetrain Direction Controls*/
 		driveFlipButton = new ButtonReader(
-				gamepad1ex, GamepadKeys.Button.START
+				gamepad1ex, GamepadKeys.Button.X
 		);
 
 		/*Intake Controls*/

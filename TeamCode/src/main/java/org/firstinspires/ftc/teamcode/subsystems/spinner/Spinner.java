@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.subsystems.spinner;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -8,9 +9,12 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
+@Config
 public class Spinner {
 
     public DcMotorEx spinnerMotor;
+
+    public static double spinSpeed = 0.75;
 
     Telemetry telemetry;
     TelemetryPacket packet = new TelemetryPacket();

@@ -28,6 +28,7 @@ public class CompTeleOp extends LinearOpMode{
 	ElapsedTime intakeTimer = new ElapsedTime();
 	ElapsedTime pusherTimer = new ElapsedTime();
 	ElapsedTime blinkTimer = new ElapsedTime();
+	ElapsedTime duckTimer = new ElapsedTime();
 
 	TelemetryPacket packet = new TelemetryPacket();
 	FtcDashboard dashboard = FtcDashboard.getInstance();
@@ -38,7 +39,7 @@ public class CompTeleOp extends LinearOpMode{
 		GamepadEx gamepad2ex = new GamepadEx(gamepad2);
 		controls = new Controls(gamepad1ex, gamepad2ex);
 
-		robot = new CompRobot(hardwareMap, telemetry, true);
+		robot = new CompRobot(hardwareMap, telemetry, false);
 
 		waitForStart();
 
@@ -57,7 +58,7 @@ public class CompTeleOp extends LinearOpMode{
 					break;
 
 				case THREE_QUARTER_SPEED:
-					speedOverride = 0.75;
+					speedOverride = 0.6;
 					if (!controls.speedTrigger.isDown()) {
 						robot.states.speedState = States.SpeedState.FULL_SPEED;
 					}
@@ -132,12 +133,6 @@ public class CompTeleOp extends LinearOpMode{
 						robot.states.intakeState = States.IntakeState.IDLE;
 					}
 					if (robot.intake.isLoaded()) {
-						if (robot.states.lightState == States.LightState.RED) {
-							robot.states.lightState = States.LightState.BLINK_RED;
-						}
-						if (robot.states.lightState == States.LightState.GREEN) {
-							robot.states.lightState = States.LightState.BLINK_GREEN;
-						}
 						intakeTimer.reset();
 						robot.states.intakeState = States.IntakeState.UNLOAD;
 					}
@@ -253,7 +248,7 @@ public class CompTeleOp extends LinearOpMode{
 				case RETRACTING:
 					robot.gantry.kP = -0.03;
 					robot.states.liftControlState = States.LiftControlState.HOME;
-					if (robot.lift.getHeight() < 1.0) {
+					if (robot.lift.getHeight() < 2.0) {
 						robot.states.gantryState = States.GantryState.DOCK;
 					}
 					break;
@@ -477,7 +472,7 @@ public class CompTeleOp extends LinearOpMode{
 					break;
 
 				case POSITION_CONTROL:
-					double capPosition = gamepad2.right_trigger;
+					double capPosition = (gamepad2.right_trigger)/1.8;
 					robot.capstone.capSetPosition(capPosition);
 					break;
 
@@ -490,20 +485,28 @@ public class CompTeleOp extends LinearOpMode{
 				case IDLE:
 					robot.spinner.runSpinner(0.0);
 					if (controls.duckSpinnerButton.isDown()) {
+						duckTimer.reset();
 						robot.states.spinnerControlState = States.SpinnerControlState.BLUE;
 					}
 					break;
 
 				case RED:
-					robot.spinner.runSpinner(0.5);
+					robot.spinner.runSpinner(robot.spinner.spinSpeed);
 					if (!controls.duckSpinnerButton.isDown()) {
 						robot.states.spinnerControlState = States.SpinnerControlState.IDLE;
 					}
 					break;
 
 				case BLUE:
-					robot.spinner.runSpinner(-0.5);
+					if (duckTimer.seconds() < 0.75) {
+						robot.spinner.runSpinner(-0.6);
+					}
+					else {
+						robot.spinner.runSpinner(-robot.spinner.spinSpeed);
+					}
+
 					if (!controls.duckSpinnerButton.isDown()) {
+						robot.spinner.runSpinner(1);
 						robot.states.spinnerControlState = States.SpinnerControlState.IDLE;
 					}
 					break;
