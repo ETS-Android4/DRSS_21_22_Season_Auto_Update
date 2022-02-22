@@ -20,6 +20,7 @@ public class BlueDepotRemoteTrajectory{
     public Trajectory depotAlignmentTrajectory2;
     public Trajectory depotAlignmentTrajectory3;
     public Trajectory initialDepotTrajectory;
+    public Trajectory depotExitTrajectory;
     public Trajectory cycleAlignToPlaceTrajectory;
     public Trajectory cycleAlignToDepotTrajectory;
     public Trajectory park;
@@ -41,7 +42,6 @@ public class BlueDepotRemoteTrajectory{
         CYCLE_ALIGN_TO_PLACE_TRAJECTORY,
         CYCLE_PLACE,
         CYCLE_ALIGN_TO_DEPOT_TRAJECTORY,
-        CYCLE_DEPOT_TRAJECTORY,
         PARK
     }
     public TrajectoryControlState trajectoryControlState;
@@ -68,7 +68,7 @@ public class BlueDepotRemoteTrajectory{
         telemetry.update();
 
         randomizedPlaceTrajectory = drive.trajectoryBuilder(startPose)
-                .lineToLinearHeading(new Pose2d(-22, 42, Math.toRadians(135)))
+                .lineToLinearHeading(new Pose2d(-20, 42, Math.toRadians(135)))
                 .build();
 
         duckSpinnerTrajectory = drive.trajectoryBuilder(randomizedPlaceTrajectory.end())
@@ -79,18 +79,22 @@ public class BlueDepotRemoteTrajectory{
                 .back(15)
                 .build();
 
+        /*
+        * TODO: Figure out if we can avoid strafing to align ourselves with the warehouse entry
+        * */
         depotAlignmentTrajectory2 = drive.trajectoryBuilder(depotAlignmentTrajectory1.end())
                 .lineToLinearHeading(new Pose2d(10, 52, Math.toRadians(0.0)))
-                //.splineTo(new Vector2d(10, 53), Math.toRadians(0.0))
                 .build();
 
         depotAlignmentTrajectory3 = drive.trajectoryBuilder(depotAlignmentTrajectory2.end())
                 .strafeLeft(12)
                 .build();
 
+        /*
+        * TODO: Adjust this so that the weighted drive power doesn't have to go forward too much before hitting the pile.
+        * */
         initialDepotTrajectory = drive.trajectoryBuilder(depotAlignmentTrajectory3.end())
-                //.forward(30)
-                .lineTo(new Vector2d(50,52))
+                .lineTo(new Vector2d(45,52))
                 .build();
 
         telemetry.addData("Trajectories: ", "Created");

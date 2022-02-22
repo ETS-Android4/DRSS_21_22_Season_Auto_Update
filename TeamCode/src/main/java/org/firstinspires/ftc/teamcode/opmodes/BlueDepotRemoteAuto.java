@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.opmodes;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -30,13 +31,14 @@ public class BlueDepotRemoteAuto extends LinearOpMode {
     double gantryExtension = 0;
     double liftCustomHeight = 0;
     double capstonePosition = 0;
-    double cycleTime = 0;
+    double cycleTime = 30;
 
     Pose2d poseEstimate;
 
     ElapsedTime matchTimer = new ElapsedTime();
     ElapsedTime generalTimer = new ElapsedTime();
     ElapsedTime intakeTimer = new ElapsedTime();
+    ElapsedTime pusherTimer = new ElapsedTime();
 
     TelemetryPacket packet = new TelemetryPacket();
     FtcDashboard dashboard = FtcDashboard.getInstance();
@@ -93,7 +95,6 @@ public class BlueDepotRemoteAuto extends LinearOpMode {
                         case SET_HEIGHT:
                             if (duckPosition == 1) {
                                 liftCustomHeight = 0.5;
-                                capstonePosition = 0.425;
                             }
                             if (duckPosition == 2) {
                                 liftCustomHeight = 5;
@@ -118,6 +119,9 @@ public class BlueDepotRemoteAuto extends LinearOpMode {
                 case RANDOMIZED_PLACE:
                     switch (trajectory.placeControlState) {
                         case WAIT_FOR_HEIGHT:
+                            /*
+                            * TODO: Figure out what the heck is wrong here??
+                            * */
                             if (robot.lift.getHeight() > (liftCustomHeight-2)) {
                                 trajectory.placeControlState = BlueDepotRemoteTrajectory.PlaceControlState.MOVE_GANTRY;
                             }
@@ -134,30 +138,25 @@ public class BlueDepotRemoteAuto extends LinearOpMode {
                                 gantryExtension = 0.35;
                             }
                             if (robot.gantry.getPosition() <= (robot.gantry.DRIVER_POSTION_MIN + (robot.gantry.DRIVER_POSITON_RANGE * gantryExtension) - 1)) {
-                                generalTimer.reset();
                                 trajectory.placeControlState = BlueDepotRemoteTrajectory.PlaceControlState.PLACE;
                             }
                             break;
 
                         case PLACE:
-                            capstonePosition = 0.5;
-                            if (generalTimer.seconds() > 0.5) {
+                            robot.states.pusherState = States.PusherState.EXTENDED;
+                            if (robot.states.pusherState == States.PusherState.RETRACTED) {
                                 generalTimer.reset();
-                                robot.gantry.DRIVER_POSTION_MIN = -75;
                                 trajectory.placeControlState = BlueDepotRemoteTrajectory.PlaceControlState.RESET;
                             }
                             break;
 
                         case RESET:
                             gantryExtension = 0;
-                            if (generalTimer.seconds() > 0.5) {
-                                capstonePosition = 0;
-                            }
-                            if (generalTimer.seconds() > 0.75) {
-                                robot.gantry.DRIVER_POSTION_MIN = -155;
-                            }
                             if (generalTimer.seconds() > 1) {
                                 robot.states.liftControlState = States.LiftControlState.HOME;
+                                /*
+                                * TODO: Again, figure out what was up with this??
+                                * */
                                 if (robot.lift.getHeight() <= 2.0) {
                                     robot.drive.followTrajectoryAsync(trajectory.duckSpinnerTrajectory);
                                     trajectory.trajectoryControlState = BlueDepotRemoteTrajectory.TrajectoryControlState.DUCK_SPINNER_TRAJECTORY;
@@ -211,29 +210,130 @@ public class BlueDepotRemoteAuto extends LinearOpMode {
 
                 case INITIAL_DEPOT_TRAJECTORY:
                     if (!robot.drive.isBusy()) {
+                        generalTimer.reset();
                         trajectory.trajectoryControlState = BlueDepotRemoteTrajectory.TrajectoryControlState.INTAKE;
                     }
                     break;
 
                 case INTAKE:
                     robot.states.intakeState = States.IntakeState.INTAKE;
-                    trajectory.trajectoryControlState = BlueDepotRemoteTrajectory.TrajectoryControlState.IDLE;
+
+                    if ((!robot.intake.isLoaded()) || (generalTimer.seconds() < 1.5)) {
+                        robot.drive.setWeightedDrivePower(
+                                new Pose2d(
+                                        0.5,
+                                        0,
+                                        0
+                                )
+                        );
+                    }
+                    else {
+                        robot.drive.setWeightedDrivePower(
+                                new Pose2d(
+                                        0,
+                                        0,
+                                        0
+                                )
+                        );
+                        trajectory.trajectoryControlState = BlueDepotRemoteTrajectory.TrajectoryControlState.CHECK_CYCLE;
+                    }
                     break;
 
                 case CHECK_CYCLE:
                     double timeLeft = 30 - matchTimer.seconds();
 
                     if (timeLeft > cycleTime) {
+                        trajectory.depotExitTrajectory = robot.drive.trajectoryBuilder(poseEstimate, true)
+                                .lineToConstantHeading(new Vector2d(10, 52))
+                                .build();
+                        robot.drive.followTrajectoryAsync(trajectory.depotExitTrajectory);
                         trajectory.trajectoryControlState = BlueDepotRemoteTrajectory.TrajectoryControlState.CYCLE_DEPOT_EXIT_TRAJECTORY;
                     }
                     else {
-                        Trajectory parkTrajectory = robot.drive.trajectoryBuilder(poseEstimate)
-                                .splineToLinearHeading(new Pose2d(42, 45, Math.toRadians(0.0)), Math.toRadians(0.0))
+                        trajectory.park = robot.drive.trajectoryBuilder(poseEstimate)
+                                .lineToConstantHeading(new Vector2d(42, 45))
                                 .build();
-                        robot.drive.followTrajectoryAsync(parkTrajectory);
+                        robot.drive.followTrajectoryAsync(trajectory.park);
                         trajectory.trajectoryControlState = BlueDepotRemoteTrajectory.TrajectoryControlState.PARK;
                     }
 
+                    break;
+
+                case CYCLE_DEPOT_EXIT_TRAJECTORY:
+                    if (!robot.drive.isBusy()) {
+                        trajectory.cycleAlignToPlaceTrajectory = robot.drive.trajectoryBuilder(trajectory.park.end())
+                                .lineToLinearHeading(new Pose2d(-20, 42, Math.toRadians(135)))
+                                .build();
+                        robot.drive.followTrajectoryAsync(trajectory.cycleAlignToPlaceTrajectory);
+                        trajectory.trajectoryControlState = BlueDepotRemoteTrajectory.TrajectoryControlState.CYCLE_ALIGN_TO_PLACE_TRAJECTORY;
+                    }
+                    break;
+
+                case CYCLE_ALIGN_TO_PLACE_TRAJECTORY:
+                    if (!robot.drive.isBusy()) {
+                        robot.states.gantryState = States.GantryState.EXTENDING;
+                        trajectory.placeControlState = BlueDepotRemoteTrajectory.PlaceControlState.WAIT_FOR_HEIGHT;
+                        trajectory.trajectoryControlState = BlueDepotRemoteTrajectory.TrajectoryControlState.CYCLE_PLACE;
+                    }
+                    break;
+
+                case CYCLE_PLACE:
+                    switch (trajectory.placeControlState) {
+                        case WAIT_FOR_HEIGHT:
+                            /*
+                             * TODO: Figure out what the heck is wrong here??
+                             * */
+                            if (robot.lift.getHeight() > (liftCustomHeight-2)) {
+                                trajectory.placeControlState = BlueDepotRemoteTrajectory.PlaceControlState.MOVE_GANTRY;
+                            }
+                            break;
+
+                        case MOVE_GANTRY:
+                            if (duckPosition == 1) {
+                                gantryExtension = 0.5;
+                            }
+                            if (duckPosition == 2) {
+                                gantryExtension = 0.5;
+                            }
+                            if (duckPosition == 3) {
+                                gantryExtension = 0.35;
+                            }
+                            if (robot.gantry.getPosition() <= (robot.gantry.DRIVER_POSTION_MIN + (robot.gantry.DRIVER_POSITON_RANGE * gantryExtension) - 1)) {
+                                trajectory.placeControlState = BlueDepotRemoteTrajectory.PlaceControlState.PLACE;
+                            }
+                            break;
+
+                        case PLACE:
+                            robot.states.pusherState = States.PusherState.EXTENDED;
+                            if (robot.states.pusherState == States.PusherState.RETRACTED) {
+                                generalTimer.reset();
+                                trajectory.placeControlState = BlueDepotRemoteTrajectory.PlaceControlState.RESET;
+                            }
+                            break;
+
+                        case RESET:
+                            gantryExtension = 0;
+                            if (generalTimer.seconds() > 1) {
+                                robot.states.liftControlState = States.LiftControlState.HOME;
+                                /*
+                                 * TODO: Again, figure out what was up with this??
+                                 * */
+                                if (robot.lift.getHeight() <= 2.0) {
+                                    trajectory.cycleAlignToDepotTrajectory = robot.drive.trajectoryBuilder(trajectory.cycleAlignToPlaceTrajectory.end())
+                                            .lineToLinearHeading(new Pose2d(10, 52, Math.toRadians(0.0)))
+                                            .build();
+                                    trajectory.trajectoryControlState = BlueDepotRemoteTrajectory.TrajectoryControlState.CYCLE_ALIGN_TO_DEPOT_TRAJECTORY;
+                                }
+                            }
+                            break;
+                    }
+                    break;
+
+                case CYCLE_ALIGN_TO_DEPOT_TRAJECTORY:
+                    if (!robot.drive.isBusy()) {
+                        robot.drive.followTrajectoryAsync(trajectory.depotAlignmentTrajectory3);
+                        trajectory.trajectoryControlState = BlueDepotRemoteTrajectory.TrajectoryControlState.DEPOT_ALIGNMENT_TRAJECTORY3;
+                    }
                     break;
 
                 case PARK:
@@ -243,6 +343,7 @@ public class BlueDepotRemoteAuto extends LinearOpMode {
                     break;
 
                 case IDLE:
+                    requestOpModeStop();
                     break;
 
                 default:
@@ -339,12 +440,15 @@ public class BlueDepotRemoteAuto extends LinearOpMode {
 
             /*Pusher Control State Machine*/
             switch (robot.states.pusherState) {
-                case EXTENDED:
-                    robot.pusher.pusherSetPosition(180);
+                case RETRACTED:
+                    robot.pusher.pusherSetPosition(0.0);
                     break;
 
-                case RETRACTED:
-                    robot.pusher.pusherSetPosition(0);
+                case EXTENDED:
+                    robot.pusher.pusherSetPosition(1.0);
+                    if (pusherTimer.seconds() > 0.3) {
+                        robot.states.pusherState = States.PusherState.RETRACTED;
+                    }
                     break;
 
                 default:
