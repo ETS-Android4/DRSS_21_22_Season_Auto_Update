@@ -339,7 +339,7 @@ public class CompTeleOp extends LinearOpMode{
 					break;
 
 				case LEVEL_ONE:
-					robot.lift.setHeight(5);
+					robot.lift.setHeight(3);
 					if (controls.liftHeightIncreaseButton.wasJustPressed()) {
 						robot.states.previousliftControlState = States.LiftControlState.LEVEL_ONE;
 						robot.states.liftControlState = States.LiftControlState.LEVEL_TWO;
@@ -351,7 +351,7 @@ public class CompTeleOp extends LinearOpMode{
 					break;
 
 				case LEVEL_TWO:
-					robot.lift.setHeight(10);
+					robot.lift.setHeight(12);
 					if (controls.liftHeightDecreaseButton.wasJustPressed()) {
 						robot.states.previousliftControlState = States.LiftControlState.LEVEL_TWO;
 						robot.states.liftControlState = States.LiftControlState.LEVEL_ONE;
@@ -367,7 +367,7 @@ public class CompTeleOp extends LinearOpMode{
 					break;
 
 				case LEVEL_THREE:
-					robot.lift.setHeight(15);
+					robot.lift.setHeight(16);
 					if (controls.liftHeightDecreaseButton.wasJustPressed()) {
 						robot.states.previousliftControlState = States.LiftControlState.LEVEL_TWO;
 						robot.states.liftControlState = States.LiftControlState.LEVEL_TWO;

@@ -10,20 +10,21 @@ import org.firstinspires.ftc.teamcode.subsystems.roadrunner.drive.CompMecanumDri
 /**
  * Created by Antoine on 2/3/2022
  */
-public class BlueDepotRemoteTrajectory{
+public class NODUCKBlueDepotRemoteTrajectory{
 
     CompMecanumDrive drive;
 
     public Trajectory randomizedPlaceTrajectory;
-    public Trajectory duckSpinnerTrajectory;
     public Trajectory depotAlignmentTrajectory1;
     public Trajectory depotAlignmentTrajectory2;
     public Trajectory depotAlignmentTrajectory3;
-    public Trajectory depotAlignmentTrajectory4;
     public Trajectory initialDepotTrajectory;
-    public Trajectory depotExitTrajectory;
+    public Trajectory depotExitTrajectory1;
+    public Trajectory depotExitTrajectory2;
+    public Trajectory depotExitTrajectory3;
     public Trajectory cycleAlignToPlaceTrajectory;
     public Trajectory cycleAlignToDepotTrajectory;
+    public Trajectory cycleEnterDepotTrajectory;
     public Trajectory park;
 
     public enum TrajectoryControlState {
@@ -31,16 +32,15 @@ public class BlueDepotRemoteTrajectory{
         INITIAL_LIFT,
         RANDOMIZED_PLACE_TRAJECTORY,
         RANDOMIZED_PLACE,
-        DUCK_SPINNER_TRAJECTORY,
-        SPIN_DUCK,
         DEPOT_ALIGNMENT_TRAJECTORY1,
         DEPOT_ALIGNMENT_TRAJECTORY2,
         DEPOT_ALIGNMENT_TRAJECTORY3,
-        DEPOT_ALIGNMENT_TRAJECTORY4,
         INITIAL_DEPOT_TRAJECTORY,
         INTAKE,
         CHECK_CYCLE,
-        CYCLE_DEPOT_EXIT_TRAJECTORY,
+        CYCLE_DEPOT_EXIT_TRAJECTORY1,
+        CYCLE_DEPOT_EXIT_TRAJECTORY2,
+        CYCLE_DEPOT_EXIT_TRAJECTORY3,
         CYCLE_ALIGN_TO_PLACE_TRAJECTORY,
         CYCLE_PLACE,
         CYCLE_ALIGN_TO_DEPOT_TRAJECTORY,
@@ -57,7 +57,7 @@ public class BlueDepotRemoteTrajectory{
     }
     public PlaceControlState placeControlState;
 
-    public BlueDepotRemoteTrajectory(CompMecanumDrive drive, Telemetry telemetry) {
+    public NODUCKBlueDepotRemoteTrajectory(CompMecanumDrive drive, Telemetry telemetry) {
         this.drive = drive;
 
         trajectoryControlState = TrajectoryControlState.IDLE;
@@ -70,37 +70,26 @@ public class BlueDepotRemoteTrajectory{
         telemetry.update();
 
         randomizedPlaceTrajectory = drive.trajectoryBuilder(startPose)
-                .lineToLinearHeading(new Pose2d(-20.5, 42, Math.toRadians(110)))
+                .lineToLinearHeading(new Pose2d(-20, 40, Math.toRadians(120)))
                 .build();
 
-        duckSpinnerTrajectory = drive.trajectoryBuilder(randomizedPlaceTrajectory.end())
-                .splineTo(new Vector2d(-58, 58), Math.toRadians(90.0))
+        depotAlignmentTrajectory1 = drive.trajectoryBuilder(randomizedPlaceTrajectory.end())
+                .lineToLinearHeading(new Pose2d(10, 60, Math.toRadians(0.0)))
                 .build();
 
-        depotAlignmentTrajectory1 = drive.trajectoryBuilder(duckSpinnerTrajectory.end())
-                .back(15)
-                .build();
-
-        /*
-        * TODO: Figure out if we can avoid strafing to align ourselves with the warehouse entry
-        * */
         depotAlignmentTrajectory2 = drive.trajectoryBuilder(depotAlignmentTrajectory1.end())
-                .lineToLinearHeading(new Pose2d(-12, 45, Math.toRadians(0.0)))
+                .strafeLeft(7)
                 .build();
 
-        depotAlignmentTrajectory3 = drive.trajectoryBuilder(depotAlignmentTrajectory2.end())
-                .lineToConstantHeading(new Vector2d(10, 58))
-                .build();
-
-        depotAlignmentTrajectory4 = drive.trajectoryBuilder(depotAlignmentTrajectory3.end())
-                .strafeLeft(12)
+        depotAlignmentTrajectory3 = drive.trajectoryBuilder(new Pose2d(10, 65, Math.toRadians(0)))
+                .strafeRight(2)
                 .build();
 
         /*
         * TODO: Adjust this so that the weighted drive power doesn't have to go forward too much before hitting the pile.
         * */
         initialDepotTrajectory = drive.trajectoryBuilder(depotAlignmentTrajectory3.end())
-                .lineTo(new Vector2d(45,52))
+                .forward(27)
                 .build();
 
         telemetry.addData("Trajectories: ", "Created");
