@@ -95,10 +95,10 @@ public class NODUCKBlueDepotRemoteAuto extends LinearOpMode {
                         case SET_HEIGHT:
                             robot.gantry.DRIVER_POSTION_MIN = -135;
                             if (duckPosition == 1) {
-                                liftCustomHeight = 0.5;
+                                liftCustomHeight = 5;
                             }
                             if (duckPosition == 2) {
-                                liftCustomHeight = 5;
+                                liftCustomHeight = 10;
                             }
                             if (duckPosition == 3) {
                                 liftCustomHeight = 14.5;
@@ -158,6 +158,7 @@ public class NODUCKBlueDepotRemoteAuto extends LinearOpMode {
 
                         case RESET:
                             gantryExtension = 0;
+                            duckPosition = 3;
                             if (generalTimer.seconds() > 1) {
                                 robot.states.liftControlState = States.LiftControlState.HOME;
                                 /*
@@ -278,6 +279,7 @@ public class NODUCKBlueDepotRemoteAuto extends LinearOpMode {
 
                 case CYCLE_ALIGN_TO_PLACE_TRAJECTORY:
                     if (!robot.drive.isBusy()) {
+                        liftCustomHeight = 14.5;
                         robot.states.gantryState = States.GantryState.EXTENDING;
                         trajectory.placeControlState = NODUCKBlueDepotRemoteTrajectory.PlaceControlState.WAIT_FOR_HEIGHT;
                         trajectory.trajectoryControlState = NODUCKBlueDepotRemoteTrajectory.TrajectoryControlState.CYCLE_PLACE;
@@ -296,15 +298,7 @@ public class NODUCKBlueDepotRemoteAuto extends LinearOpMode {
                             break;
 
                         case MOVE_GANTRY:
-                            if (duckPosition == 1) {
-                                gantryExtension = 0.35;
-                            }
-                            if (duckPosition == 2) {
-                                gantryExtension = 0.35;
-                            }
-                            if (duckPosition == 3) {
-                                gantryExtension = 0.85;
-                            }
+                            gantryExtension = 0.85;
                             if (robot.gantry.getPosition() <= (robot.gantry.DRIVER_POSTION_MIN + (robot.gantry.DRIVER_POSITON_RANGE * gantryExtension) - 1)) {
                                 generalTimer.reset();
                                 trajectory.placeControlState = NODUCKBlueDepotRemoteTrajectory.PlaceControlState.PLACE;
