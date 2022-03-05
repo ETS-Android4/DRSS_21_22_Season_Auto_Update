@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.opmodes;
+package org.firstinspires.ftc.teamcode.opmodes.autonomous;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
@@ -12,20 +12,20 @@ import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.teamcode.subsystems.roadrunner.drive.PoseStorage;
 import org.firstinspires.ftc.teamcode.subsystems.robot.CompRobot;
 import org.firstinspires.ftc.teamcode.subsystems.states.States;
-import org.firstinspires.ftc.teamcode.subsystems.trajectories.NODUCKBlueDepotRemoteTrajectory;
-import org.firstinspires.ftc.teamcode.subsystems.webcam.Webcam;
-import org.opencv.objdetect.HOGDescriptor;
+import org.firstinspires.ftc.teamcode.subsystems.trajectories.BlueDepotRemoteTrajectory;
+import org.firstinspires.ftc.teamcode.subsystems.trajectories.CAROUSELRedTrajectory;
+import org.firstinspires.ftc.teamcode.subsystems.webcam.WebcamRed;
 
 /**
  * Created by Antoine on 2/3/2022
  */
 
-@Autonomous(name = "NO DUCK Blue Depot Remote", group = "Autonomous")
-public class NODUCKBlueDepotRemoteAuto extends LinearOpMode {
+@Autonomous(name = "CAROUSEL Red Depot", group = "Autonomous")
+public class CAROUSELRedAuto extends LinearOpMode {
 
     CompRobot robot;
-    NODUCKBlueDepotRemoteTrajectory trajectory;
-    Webcam webcam;
+    CAROUSELRedTrajectory trajectory;
+    WebcamRed webcam;
 
     int duckPosition = 1;
     double gantryExtension = 0;
@@ -47,8 +47,8 @@ public class NODUCKBlueDepotRemoteAuto extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
 
         robot = new CompRobot(hardwareMap, telemetry, true);
-        trajectory = new NODUCKBlueDepotRemoteTrajectory(robot.drive, telemetry);
-        webcam = new Webcam(hardwareMap, telemetry);
+        trajectory = new CAROUSELRedTrajectory(robot.drive, telemetry);
+        webcam = new WebcamRed(hardwareMap, telemetry);
 
         /*Pre-Start/Post-Init Loop*/
         while (!opModeIsActive()) {
@@ -64,8 +64,8 @@ public class NODUCKBlueDepotRemoteAuto extends LinearOpMode {
         }
 
         matchTimer.reset();
-        trajectory.trajectoryControlState = NODUCKBlueDepotRemoteTrajectory.TrajectoryControlState.INITIAL_LIFT;
-        trajectory.placeControlState = NODUCKBlueDepotRemoteTrajectory.PlaceControlState.SET_HEIGHT;
+        trajectory.trajectoryControlState = CAROUSELRedTrajectory.TrajectoryControlState.INITIAL_LIFT;
+        trajectory.placeControlState = CAROUSELRedTrajectory.PlaceControlState.SET_HEIGHT;
 
         while (opModeIsActive()) {
 
@@ -103,17 +103,51 @@ public class NODUCKBlueDepotRemoteAuto extends LinearOpMode {
                             if (duckPosition == 3) {
                                 liftCustomHeight = 14.5;
                             }
-                            robot.drive.followTrajectoryAsync(trajectory.randomizedPlaceTrajectory);
-                            trajectory.trajectoryControlState = NODUCKBlueDepotRemoteTrajectory.TrajectoryControlState.RANDOMIZED_PLACE_TRAJECTORY;
+                            robot.drive.followTrajectoryAsync(trajectory.initialMoveTrajectory);
+                            trajectory.trajectoryControlState = CAROUSELRedTrajectory.TrajectoryControlState.INITIAL_MOVE;
                             break;
                     }
+                    break;
+
+                case INITIAL_MOVE:
+                    if (!robot.drive.isBusy()) {
+                        robot.drive.followTrajectoryAsync(trajectory.carouselAlignmentTrajectory);
+                        trajectory.trajectoryControlState = CAROUSELRedTrajectory.TrajectoryControlState.CAROUSEL_ALIGNMENT;
+                    }
+                    break;
+
+                case CAROUSEL_ALIGNMENT:
+                    if (!robot.drive.isBusy()) {
+                        robot.drive.followTrajectoryAsync(trajectory.pushIntoCarouselTrajectory);
+                        trajectory.trajectoryControlState = CAROUSELRedTrajectory.TrajectoryControlState.PUSH_INTO_CAROUSEL;
+                    }
+                    break;
+
+                case PUSH_INTO_CAROUSEL:
+                    if (!robot.drive.isBusy()) {
+                        generalTimer.reset();
+                        trajectory.trajectoryControlState = CAROUSELRedTrajectory.TrajectoryControlState.SPIN_DUCK;
+                    }
+                    break;
+
+                case SPIN_DUCK:
+                    while (generalTimer.seconds() < 2) {
+                        robot.spinner.runSpinner(0.7);
+                    }
+                    if (generalTimer.seconds() >= 2.5) {
+                        robot.spinner.stop();
+
+                        robot.drive.followTrajectoryAsync(trajectory.randomizedPlaceTrajectory);
+                        trajectory.trajectoryControlState = CAROUSELRedTrajectory.TrajectoryControlState.RANDOMIZED_PLACE_TRAJECTORY;
+                    }
+
                     break;
 
                 case RANDOMIZED_PLACE_TRAJECTORY:
                     if (!robot.drive.isBusy()) {
                         robot.states.gantryState = States.GantryState.EXTENDING;
-                        trajectory.placeControlState = NODUCKBlueDepotRemoteTrajectory.PlaceControlState.WAIT_FOR_HEIGHT;
-                        trajectory.trajectoryControlState = NODUCKBlueDepotRemoteTrajectory.TrajectoryControlState.RANDOMIZED_PLACE;
+                        trajectory.placeControlState = CAROUSELRedTrajectory.PlaceControlState.WAIT_FOR_HEIGHT;
+                        trajectory.trajectoryControlState = CAROUSELRedTrajectory.TrajectoryControlState.RANDOMIZED_PLACE;
                     }
                     break;
 
@@ -124,7 +158,7 @@ public class NODUCKBlueDepotRemoteAuto extends LinearOpMode {
                             * TODO: Figure out what the heck is wrong here??
                             * */
                             if (robot.lift.getHeight() > (liftCustomHeight-2)) {
-                                trajectory.placeControlState = NODUCKBlueDepotRemoteTrajectory.PlaceControlState.MOVE_GANTRY;
+                                trajectory.placeControlState = CAROUSELRedTrajectory.PlaceControlState.MOVE_GANTRY;
                             }
                             break;
 
@@ -140,7 +174,7 @@ public class NODUCKBlueDepotRemoteAuto extends LinearOpMode {
                             }
                             if (robot.gantry.getPosition() <= (robot.gantry.DRIVER_POSTION_MIN + (robot.gantry.DRIVER_POSITON_RANGE * gantryExtension) - 1)) {
                                 generalTimer.reset();
-                                trajectory.placeControlState = NODUCKBlueDepotRemoteTrajectory.PlaceControlState.PLACE;
+                                trajectory.placeControlState = CAROUSELRedTrajectory.PlaceControlState.PLACE;
                             }
                             break;
 
@@ -152,7 +186,7 @@ public class NODUCKBlueDepotRemoteAuto extends LinearOpMode {
 
                             if (generalTimer.seconds() > 0.75) {
                                 generalTimer.reset();
-                                trajectory.placeControlState = NODUCKBlueDepotRemoteTrajectory.PlaceControlState.RESET;
+                                trajectory.placeControlState = CAROUSELRedTrajectory.PlaceControlState.RESET;
                             }
                             break;
 
@@ -166,7 +200,7 @@ public class NODUCKBlueDepotRemoteAuto extends LinearOpMode {
                                 * */
                                 if (robot.lift.getHeight() <= 2.0) {
                                     robot.drive.followTrajectoryAsync(trajectory.depotAlignmentTrajectory1);
-                                    trajectory.trajectoryControlState = NODUCKBlueDepotRemoteTrajectory.TrajectoryControlState.DEPOT_ALIGNMENT_TRAJECTORY1;
+                                    trajectory.trajectoryControlState = CAROUSELRedTrajectory.TrajectoryControlState.DEPOT_ALIGNMENT_TRAJECTORY1;
                                 }
                             }
                             break;
@@ -176,25 +210,25 @@ public class NODUCKBlueDepotRemoteAuto extends LinearOpMode {
                 case DEPOT_ALIGNMENT_TRAJECTORY1:
                     if (!robot.drive.isBusy()) {
                         robot.drive.followTrajectoryAsync(trajectory.depotAlignmentTrajectory2);
-                        trajectory.trajectoryControlState = NODUCKBlueDepotRemoteTrajectory.TrajectoryControlState.DEPOT_ALIGNMENT_TRAJECTORY2;
+                        trajectory.trajectoryControlState = CAROUSELRedTrajectory.TrajectoryControlState.DEPOT_ALIGNMENT_TRAJECTORY2;
                     }
                     break;
 
                 case DEPOT_ALIGNMENT_TRAJECTORY2:
                     if (!robot.drive.isBusy()) {
-                        robot.drive.setPoseEstimate(new Pose2d(10, 65, Math.toRadians(0)));
+                        robot.drive.setPoseEstimate(new Pose2d(10, -65, Math.toRadians(0)));
 
                         robot.states.gantryState = States.GantryState.DOCK;
 
                         robot.drive.followTrajectoryAsync(trajectory.depotAlignmentTrajectory3);
-                        trajectory.trajectoryControlState = NODUCKBlueDepotRemoteTrajectory.TrajectoryControlState.DEPOT_ALIGNMENT_TRAJECTORY3;
+                        trajectory.trajectoryControlState = CAROUSELRedTrajectory.TrajectoryControlState.DEPOT_ALIGNMENT_TRAJECTORY3;
                     }
                     break;
 
                 case DEPOT_ALIGNMENT_TRAJECTORY3:
                     if (!robot.drive.isBusy()) {
                         robot.drive.followTrajectoryAsync(trajectory.initialDepotTrajectory);
-                        trajectory.trajectoryControlState = NODUCKBlueDepotRemoteTrajectory.TrajectoryControlState.INITIAL_DEPOT_TRAJECTORY;
+                        trajectory.trajectoryControlState = CAROUSELRedTrajectory.TrajectoryControlState.INITIAL_DEPOT_TRAJECTORY;
                     }
                     break;
 
@@ -210,7 +244,7 @@ public class NODUCKBlueDepotRemoteAuto extends LinearOpMode {
 
                         robot.states.intakeState = States.IntakeState.INTAKE;
                         generalTimer.reset();
-                        trajectory.trajectoryControlState = NODUCKBlueDepotRemoteTrajectory.TrajectoryControlState.INTAKE;
+                        trajectory.trajectoryControlState = CAROUSELRedTrajectory.TrajectoryControlState.INTAKE;
                     }
                     break;
 
@@ -223,136 +257,14 @@ public class NODUCKBlueDepotRemoteAuto extends LinearOpMode {
                                         0
                                 )
                         );
-                        trajectory.trajectoryControlState = NODUCKBlueDepotRemoteTrajectory.TrajectoryControlState.CHECK_CYCLE;
-                    }
-                    break;
-
-                case CHECK_CYCLE:
-                    double timeLeft = 30 - matchTimer.seconds();
-
-                    if (timeLeft > cycleTime) {
-                        trajectory.depotExitTrajectory1 = robot.drive.trajectoryBuilder(poseEstimate, true)
-                                .back(10)
-                                .build();
-                        robot.drive.followTrajectoryAsync(trajectory.depotExitTrajectory1);
-                        trajectory.trajectoryControlState = NODUCKBlueDepotRemoteTrajectory.TrajectoryControlState.CYCLE_DEPOT_EXIT_TRAJECTORY1;
-                    }
-                    else {
-                        trajectory.park = robot.drive.trajectoryBuilder(poseEstimate)
-                                .lineToConstantHeading(new Vector2d(42, 45))
-                                .build();
-                        robot.drive.followTrajectoryAsync(trajectory.park);
-                        trajectory.trajectoryControlState = NODUCKBlueDepotRemoteTrajectory.TrajectoryControlState.PARK;
-                    }
-
-                    break;
-
-                case CYCLE_DEPOT_EXIT_TRAJECTORY1:
-                    if (!robot.drive.isBusy()) {
-                        trajectory.depotExitTrajectory2 = robot.drive.trajectoryBuilder(poseEstimate, true)
-                                .strafeLeft(6)
-                                .build();
-                        robot.drive.followTrajectoryAsync(trajectory.depotExitTrajectory2);
-                        trajectory.trajectoryControlState = NODUCKBlueDepotRemoteTrajectory.TrajectoryControlState.CYCLE_DEPOT_EXIT_TRAJECTORY2;
-                    }
-                    break;
-
-                case CYCLE_DEPOT_EXIT_TRAJECTORY2:
-                    if (!robot.drive.isBusy()) {
-                        trajectory.depotExitTrajectory3 = robot.drive.trajectoryBuilder(poseEstimate, true)
-                                .lineToConstantHeading(new Vector2d(6, 63))
-                                .build();
-                        robot.drive.followTrajectoryAsync(trajectory.depotExitTrajectory3);
-                        trajectory.trajectoryControlState = NODUCKBlueDepotRemoteTrajectory.TrajectoryControlState.CYCLE_DEPOT_EXIT_TRAJECTORY3;
-                    }
-                    break;
-
-                case CYCLE_DEPOT_EXIT_TRAJECTORY3:
-                    if (!robot.drive.isBusy()) {
-                        trajectory.cycleAlignToPlaceTrajectory = robot.drive.trajectoryBuilder(poseEstimate)
-                                .lineToLinearHeading(new Pose2d(-22, 44, Math.toRadians(120)))
-                                .build();
-                        robot.drive.followTrajectoryAsync(trajectory.cycleAlignToPlaceTrajectory);
-                        trajectory.trajectoryControlState = NODUCKBlueDepotRemoteTrajectory.TrajectoryControlState.CYCLE_ALIGN_TO_PLACE_TRAJECTORY;
-                    }
-                    break;
-
-                case CYCLE_ALIGN_TO_PLACE_TRAJECTORY:
-                    if (!robot.drive.isBusy()) {
-                        liftCustomHeight = 14.5;
-                        robot.states.gantryState = States.GantryState.EXTENDING;
-                        trajectory.placeControlState = NODUCKBlueDepotRemoteTrajectory.PlaceControlState.WAIT_FOR_HEIGHT;
-                        trajectory.trajectoryControlState = NODUCKBlueDepotRemoteTrajectory.TrajectoryControlState.CYCLE_PLACE;
-                    }
-                    break;
-
-                case CYCLE_PLACE:
-                    switch (trajectory.placeControlState) {
-                        case WAIT_FOR_HEIGHT:
-                            /*
-                             * TODO: Figure out what the heck is wrong here??
-                             * */
-                            if (robot.lift.getHeight() > (liftCustomHeight-2)) {
-                                trajectory.placeControlState = NODUCKBlueDepotRemoteTrajectory.PlaceControlState.MOVE_GANTRY;
-                            }
-                            break;
-
-                        case MOVE_GANTRY:
-                            gantryExtension = 0.85;
-                            if (robot.gantry.getPosition() <= (robot.gantry.DRIVER_POSTION_MIN + (robot.gantry.DRIVER_POSITON_RANGE * gantryExtension) - 1)) {
-                                generalTimer.reset();
-                                trajectory.placeControlState = NODUCKBlueDepotRemoteTrajectory.PlaceControlState.PLACE;
-                            }
-                            break;
-
-                        case PLACE:
-                            robot.states.pusherState = States.PusherState.EXTENDED;
-                            if (generalTimer.seconds() > 0.3) {
-                                robot.states.pusherState = States.PusherState.RETRACTED;
-                            }
-
-                            if (generalTimer.seconds() > 0.75) {
-                                generalTimer.reset();
-                                trajectory.placeControlState = NODUCKBlueDepotRemoteTrajectory.PlaceControlState.RESET;
-                            }
-                            break;
-
-                        case RESET:
-                            gantryExtension = 0;
-                            if (generalTimer.seconds() > 1) {
-                                robot.states.liftControlState = States.LiftControlState.HOME;
-                                /*
-                                 * TODO: Again, figure out what was up with this??
-                                 * */
-                                if (robot.lift.getHeight() <= 2.0) {
-                                    trajectory.cycleAlignToDepotTrajectory = robot.drive.trajectoryBuilder(poseEstimate)
-                                            .lineToLinearHeading(new Pose2d(10, 65, Math.toRadians(0.0)))
-                                            .build();
-
-                                    robot.states.gantryState = States.GantryState.DOCK;
-                                    robot.drive.followTrajectoryAsync(trajectory.cycleAlignToDepotTrajectory);
-                                    trajectory.trajectoryControlState = NODUCKBlueDepotRemoteTrajectory.TrajectoryControlState.CYCLE_ALIGN_TO_DEPOT_TRAJECTORY;
-                                }
-                            }
-                            break;
-                    }
-                    break;
-
-                case CYCLE_ALIGN_TO_DEPOT_TRAJECTORY:
-                    if (!robot.drive.isBusy()) {
-                        trajectory.cycleEnterDepotTrajectory = robot.drive.trajectoryBuilder(poseEstimate)
-                                .forward(35)
-                                .build();
-
-                        robot.states.intakeState = States.IntakeState.INTAKE;
-                        robot.drive.followTrajectoryAsync(trajectory.cycleEnterDepotTrajectory);
-                        trajectory.trajectoryControlState = NODUCKBlueDepotRemoteTrajectory.TrajectoryControlState.PARK;
+                        generalTimer.reset();
+                        trajectory.trajectoryControlState = CAROUSELRedTrajectory.TrajectoryControlState.PARK;
                     }
                     break;
 
                 case PARK:
-                    if (!robot.drive.isBusy()) {
-                        trajectory.trajectoryControlState = NODUCKBlueDepotRemoteTrajectory.TrajectoryControlState.IDLE;
+                    if (generalTimer.seconds() > 2) {
+                        trajectory.trajectoryControlState = CAROUSELRedTrajectory.TrajectoryControlState.IDLE;
                     }
                     break;
 
@@ -361,7 +273,7 @@ public class NODUCKBlueDepotRemoteAuto extends LinearOpMode {
                     break;
 
                 default:
-                    trajectory.trajectoryControlState = NODUCKBlueDepotRemoteTrajectory.TrajectoryControlState.IDLE;
+                    trajectory.trajectoryControlState = CAROUSELRedTrajectory.TrajectoryControlState.IDLE;
                     break;
             }
 

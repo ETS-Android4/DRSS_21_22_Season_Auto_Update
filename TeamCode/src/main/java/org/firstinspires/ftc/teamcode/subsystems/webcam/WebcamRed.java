@@ -10,14 +10,12 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 /**
  * Created by Antoine on 1/18/2022
  */
-public class Webcam {
+public class WebcamRed{
 
     private HardwareMap map;
     private Telemetry telemetry;
@@ -38,7 +36,7 @@ public class Webcam {
 
     List<Recognition> updatedRecognitions;
 
-    public Webcam(HardwareMap map, Telemetry telemetry) {
+    public WebcamRed(HardwareMap map, Telemetry telemetry) {
 
         this.map = map;
         this.telemetry = telemetry;
@@ -47,8 +45,8 @@ public class Webcam {
         telemetry.update();
 
         positions[0] = 8.0;
-        positions[1] = 242.0;
-        positions[2] = 498.0;
+        positions[1] = 220.0;
+        positions[2] = 456.0;
 
         initVuforia();
         initTfod();

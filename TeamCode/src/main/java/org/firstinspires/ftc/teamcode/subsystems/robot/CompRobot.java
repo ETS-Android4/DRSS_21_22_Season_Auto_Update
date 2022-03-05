@@ -1,14 +1,9 @@
 package org.firstinspires.ftc.teamcode.subsystems.robot;
 
-import android.graphics.Paint;
-
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.robotcore.external.State;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.subsystems.capstone.Capstone;
 import org.firstinspires.ftc.teamcode.subsystems.gantry.Gantry;
@@ -18,7 +13,6 @@ import org.firstinspires.ftc.teamcode.subsystems.pusher.Pusher;
 import org.firstinspires.ftc.teamcode.subsystems.roadrunner.drive.CompMecanumDrive;
 import org.firstinspires.ftc.teamcode.subsystems.spinner.Spinner;
 import org.firstinspires.ftc.teamcode.subsystems.states.States;
-import org.firstinspires.ftc.teamcode.subsystems.webcam.Webcam;
 
 public class CompRobot{
 

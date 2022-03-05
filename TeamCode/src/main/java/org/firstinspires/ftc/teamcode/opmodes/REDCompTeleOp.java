@@ -4,7 +4,6 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
-import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -16,8 +15,8 @@ import org.firstinspires.ftc.teamcode.subsystems.controls.Controls;
 import org.firstinspires.ftc.teamcode.subsystems.robot.CompRobot;
 import org.firstinspires.ftc.teamcode.subsystems.states.States;
 
-@TeleOp(name = "Angler TeleOp", group = "Comp")
-public class CompTeleOp extends LinearOpMode{
+@TeleOp(name = "RED Angler TeleOp", group = "Comp")
+public class REDCompTeleOp extends LinearOpMode{
 
 	Controls controls;
 
@@ -486,13 +485,20 @@ public class CompTeleOp extends LinearOpMode{
 					robot.spinner.runSpinner(0.0);
 					if (controls.duckSpinnerButton.isDown()) {
 						duckTimer.reset();
-						robot.states.spinnerControlState = States.SpinnerControlState.BLUE;
+						robot.states.spinnerControlState = States.SpinnerControlState.RED;
 					}
 					break;
 
 				case RED:
-					robot.spinner.runSpinner(robot.spinner.spinSpeed);
+					if (duckTimer.seconds() < 0.75) {
+						robot.spinner.runSpinner(0.6);
+					}
+					else {
+						robot.spinner.runSpinner(robot.spinner.spinSpeed);
+					}
+
 					if (!controls.duckSpinnerButton.isDown()) {
+						robot.spinner.runSpinner(-1);
 						robot.states.spinnerControlState = States.SpinnerControlState.IDLE;
 					}
 					break;
