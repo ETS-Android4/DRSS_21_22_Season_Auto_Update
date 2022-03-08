@@ -81,7 +81,7 @@ public class REDCompTeleOp extends LinearOpMode{
 					robot.drive.setWeightedDrivePower(
 							new Pose2d(
 									-gamepad1.left_stick_y * speedOverride,
-									gamepad1.left_stick_x * speedOverride,
+									-gamepad1.left_stick_x * speedOverride,
 									-gamepad1.right_stick_x * speedOverride
 							)
 					);
@@ -96,7 +96,7 @@ public class REDCompTeleOp extends LinearOpMode{
 					robot.drive.setWeightedDrivePower(
 							new Pose2d(
 									gamepad1.left_stick_y * speedOverride,
-									gamepad1.left_stick_x * speedOverride,
+									-gamepad1.left_stick_x * speedOverride,
 									-gamepad1.right_stick_x * speedOverride
 							)
 					);
