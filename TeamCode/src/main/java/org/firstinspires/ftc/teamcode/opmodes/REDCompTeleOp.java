@@ -337,8 +337,9 @@ public class REDCompTeleOp extends LinearOpMode{
 
 					break;
 
+
 				case LEVEL_ONE:
-					robot.lift.setHeight(3);
+					robot.lift.setHeight(0);
 					if (controls.liftHeightIncreaseButton.wasJustPressed()) {
 						robot.states.previousliftControlState = States.LiftControlState.LEVEL_ONE;
 						robot.states.liftControlState = States.LiftControlState.LEVEL_TWO;
