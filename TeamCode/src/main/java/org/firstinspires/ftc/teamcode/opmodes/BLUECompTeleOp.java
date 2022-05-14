@@ -398,6 +398,15 @@ public class BLUECompTeleOp extends LinearOpMode{
 					if (controls.liftButton.wasJustPressed()) {
 						robot.states.gantryState = States.GantryState.RETRACTING;
 					}
+
+					for (int i = 1; i < 5; i++) {
+						//Code will run 5 times
+						//At the end of each loop, it will check if i is less than 5
+						//If this is true, it will increase i by one and loop again
+						//If this is false, it will break out of the loop and move on
+					}
+
+
 					break;
 
 				default:
@@ -411,10 +420,10 @@ public class BLUECompTeleOp extends LinearOpMode{
 					robot.lift.stop();
 
 					if (gamepad2ex.getRightY() >= 0.1) {
-						robot.states.liftState = States.LiftState.EXTEND;
+						robot.states.liftState = States.LiftState.RETRACT;
 					}
 					else if (gamepad2ex.getRightY() <= -0.1) {
-						robot.states.liftState = States.LiftState.RETRACT;
+						robot.states.liftState = States.LiftState.EXTEND;
 					}
 					if (controls.liftKillButton.wasJustPressed()) {
 						robot.states.liftControlState = States.LiftControlState.HOME;
